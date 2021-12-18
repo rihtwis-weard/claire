@@ -1,0 +1,13 @@
+FROM conanio/gcc10:1.43.0
+
+# Switch to root user for installing updates and dependencies
+USER root
+
+RUN apt-get update
+RUN apt-get install -y \
+    cmake \
+    gdb \
+    git  \
+    ninja-build
+
+USER conan

@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  workspace:
+    container_name: "devcontainer"
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile.workspace
+    ports:
+      - "2222:22"
+    networks:
+      - workspace_network
+
+networks:
+  workspace_network:
+    driver: "bridge"
