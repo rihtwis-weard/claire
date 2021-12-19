@@ -1,0 +1,9 @@
+hello_world.clr
+
+
+[0] =   Identifier | IO |
+[1] =   Identifier | puts |
+[2] =     Operator | ( |
+[3] =   Identifier | Hello |
+[4] =   Identifier | world |
+[5] =     Operator | ) |
