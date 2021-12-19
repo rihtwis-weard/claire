@@ -5,7 +5,6 @@ hello_world.clr
 [1] =     Operator | . |
 [2] =   Identifier | puts |
 [3] =     Operator | ( |
-[4] =   Identifier | Hello |
-[5] =   Identifier | world |
-[6] =     Operator | ) |
+[4] =       String | "Hello world!" |
+[5] =     Operator | ) |
 
