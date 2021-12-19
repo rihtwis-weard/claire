@@ -8,10 +8,12 @@ set(TARGET clrc)
 add_executable(${TARGET} main.cpp)
 target_compile_options(${TARGET}
   PRIVATE
-    ${CLAIRE_TARGET_COMPILE_OPTIONS}
+    ${CLAIRE_COMPILE_OPTIONS}
 )
 target_sources(${TARGET}
   PRIVATE
+    state_machine.c
+    token.cpp
 )
 target_link_libraries(${TARGET}
   PUBLIC

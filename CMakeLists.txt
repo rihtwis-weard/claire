@@ -19,7 +19,9 @@ set(CLAIRE_COMPILE_OPTIONS
   -Werror
   -Wno-unused
   -pedantic-errors
-  -fconcepts
+  $<$<COMPILE_LANGUAGE:CXX>:
+      -fconcepts
+  >
 )
 
 enable_testing()
