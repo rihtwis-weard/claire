@@ -20,10 +20,10 @@ set(CLAIRE_COMPILE_OPTIONS
   -Wno-unused
   -pedantic-errors
   $<$<COMPILE_LANGUAGE:CXX>:
-      -fconcepts
+    -fconcepts
   >
 )
 
 enable_testing()
 add_subdirectory(src)
-#add_subdirectory(tests)
+add_subdirectory(tests)
