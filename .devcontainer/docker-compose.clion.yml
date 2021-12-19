@@ -5,11 +5,13 @@ services:
     container_name: "devcontainer"
     build:
       context: ..
-      dockerfile: .devcontainer/Dockerfile.workspace
+      dockerfile: .devcontainer/Dockerfile.clion
     ports:
       - "2222:22"
     networks:
       - workspace_network
+    cap_add:
+      - SYS_PTRACE
 
 networks:
   workspace_network:
