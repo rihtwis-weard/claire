@@ -1,19 +1,19 @@
 fib.clr
 
 
-[0] =     Reserved | let |
+[0] =      Keyword | let |
 [1] =   Identifier | fib |
 [2] =    Separator | \ |
 [3] =   Identifier | x |
 [4] =    Separator | : |
 [5] =   Identifier | Integer |
 [6] =     Operator | = |
-[7] =     Reserved | if |
+[7] =      Keyword | if |
 [8] =   Identifier | x |
 [9] =     Operator | < |
 [10] =      Numeral | 3 |
 [11] =      Numeral | 1 |
-[12] =     Reserved | else |
+[12] =      Keyword | else |
 [13] =   Identifier | fib |
 [14] =     Operator | ( |
 [15] =   Identifier | x |
@@ -28,13 +28,14 @@ fib.clr
 [24] =      Numeral | 2 |
 [25] =     Operator | ) |
 [26] =      Numeral | 40 |
-[27] =     Operator | > |
+[27] =     Operator | |> |
 [28] =   Identifier | fib |
 [29] =     Operator | ( |
 [30] =     Operator | ) |
-[31] =     Operator | > |
+[31] =     Operator | |> |
 [32] =   Identifier | IO |
-[33] =   Identifier | puts |
-[34] =     Operator | ( |
-[35] =     Operator | ) |
+[33] =     Operator | . |
+[34] =   Identifier | puts |
+[35] =     Operator | ( |
+[36] =     Operator | ) |
 

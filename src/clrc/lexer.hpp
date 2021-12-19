@@ -24,7 +24,7 @@ namespace claire {
       char *src_ptr = source_.data();
 
       do {
-        int  ch  = 0;
+        int  ch;
         auto eqc = ch_to_eqc[(ch = *src_ptr++)];
 
         state_ = next_state(state_, eqc);
@@ -44,13 +44,14 @@ namespace claire {
           tok.kind = TokenKind::eIdentifier;
           break;
         }
+        case LexicalState::eOperatorMultiEnd:
         case LexicalState::eIdentifierEnd: {
           tok.update_repr(src_ptr, 1, 0);
           tok.to_hyponym();
 
           // End of token requires reevaluation
           src_ptr += ch_reeval[ch];
-          // TODO(ahuman-bean): update char pos according to token length if
+          // TODO(rihtwis-weard): update col pos according to token length if
           //                    reevaluation occurred
 
           tok.reset();
@@ -76,7 +77,7 @@ namespace claire {
           tokens_.push_back(tok);
           break;
         }
-        case LexicalState::eOperator: {
+        case LexicalState::eOperatorSingle: {
           tok.kind = TokenKind::eOperator;
           tok.update_repr(src_ptr, 0, 0);
 
