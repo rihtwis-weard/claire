@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "exception.hpp"
 #include "state_machine.h"
 #include "token.hpp"
 
@@ -84,6 +85,12 @@ namespace claire {
           tok.reset();
           tokens_.push_back(tok);
           break;
+        }
+        case LexicalState::eEOF: {
+          throw unexpected_eof{};
+        }
+        case LexicalState::eError: {
+          throw invalid_lexeme{};
         }
         default:
           break;

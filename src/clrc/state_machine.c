@@ -36,7 +36,7 @@ uint16_t const ch_to_eqc[256] = {
 };
 
 // Reevaluates character after ending identifier, special sequence, or numeric literal
-// by incrementing source (typically decrements by 1), akin to negative lookahead.
+// by incrementing source (typically decrements by 1), usually following negative lookahead to terminate token.
 int const ch_reeval[256] = {
   // Line Feed - New Line
   [10]         = -1,
@@ -134,7 +134,7 @@ uint8_t const lex_trans[offset(Count)] = {
   [state(OperatorSingle) + offset(Digit)]       = state(Numeral),
   [state(OperatorSingle) + offset(Separator)]   = state(Separator),
   [state(OperatorSingle) + offset(Operator)]    = state(OperatorSingle),
-  [state(OperatorSingle) + offset(VerticalBar)] = state(Error),
+  [state(OperatorSingle) + offset(VerticalBar)] = state(OperatorMulti),
 
   [state(OperatorMulti) + offset(Layout)]      = state(OperatorMultiEnd),
   [state(OperatorMulti) + offset(Space)]       = state(OperatorMultiEnd),
