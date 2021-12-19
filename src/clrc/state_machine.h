@@ -19,7 +19,7 @@ namespace claire {
     eSeparator,
     eOperator,
     eVerticalBar,
-    eQuote,
+    eDoubleQuote,
     eEOF,
     eCount
   };
@@ -35,6 +35,8 @@ namespace claire {
     eIdentifierEnd,
     eNumeral,
     eNumeralEnd,
+    eString,
+    eStringEnd,
     eComment,
     eNewLine,
     eEOF,
@@ -81,7 +83,7 @@ typedef enum {
   eCharTypeSeparator,
   eCharTypeOperator,
   eCharTypeVerticalBar,
-  eCharTypeQuote,
+  eCharTypeDoubleQuote,
   eCharTypeEOF,
   eCharTypeCount
 } CharType;
@@ -97,6 +99,8 @@ typedef enum {
   eLexicalStateIdentifierEnd,
   eLexicalStateNumeral,
   eLexicalStateNumeralEnd,
+  eLexicalStateString,
+  eLexicalStateStringEnd,
   eLexicalStateComment,
   eLexicalStateNewLine,
   eLexicalStateEOF,

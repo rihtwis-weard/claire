@@ -15,6 +15,8 @@ uint16_t const ch_to_eqc[256] = {
   ['\n']       = offset(LineFeed),
   [11 ... 31]  = offset(Layout),
   [' ']        = offset(Space),
+  // String Literals
+  ['"']        = offset(DoubleQuote),
   // Special
   ['(']        = offset(Operator),
   [')']        = offset(Operator),
@@ -41,6 +43,7 @@ int const ch_reeval[256] = {
   // Line Feed - New Line
   [10]         = -1,
   // Special Characters
+  ['"']        = -1,
   ['(']        = -1,
   [')']        = -1,
   ['+']        = -1,
@@ -144,6 +147,7 @@ uint8_t const lex_trans[offset(Count)] = {
   [state(OperatorMulti) + offset(Separator)]   = state(OperatorMultiEnd),
   [state(OperatorMulti) + offset(Operator)]    = state(OperatorMulti),
   [state(OperatorMulti) + offset(VerticalBar)] = state(Error),
+  [state(OperatorMulti) + offset(EOF)]         = state(EOF),
 
   [state(OperatorMultiEnd) + offset(Layout)]      = state(NextChar),
   [state(OperatorMultiEnd) + offset(Space)]       = state(NextChar),
@@ -157,11 +161,12 @@ uint8_t const lex_trans[offset(Count)] = {
 
 // True if inside of an identifier, value, or special multi-character operator
 uint8_t const lex_inside[offset(Count)] = {
-  [eLexicalStateIdentifier]     = 1,
-  [eLexicalStateNumeral]        = 1,
   [eLexicalStateSeparator]      = 1,
   [eLexicalStateOperatorSingle] = 1,
   [eLexicalStateOperatorMulti]  = 1,
+  [eLexicalStateIdentifier]     = 1,
+  [eLexicalStateNumeral]        = 1,
+  [eLexicalStateString]         = 1,
 };
 
 #pragma GCC diagnostic pop
