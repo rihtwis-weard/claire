@@ -36,7 +36,7 @@ uint16_t const ch_to_eqc[256] = {
 };
 
 // Reevaluates character after ending identifier, special sequence, or numeric literal
-// by incrementing source (typically decrements by 1), akin to negative lookahead.
+// by incrementing source (typically decrements by 1), usually following negative lookahead to terminate token.
 int const ch_reeval[256] = {
   // Line Feed - New Line
   [10]         = -1,

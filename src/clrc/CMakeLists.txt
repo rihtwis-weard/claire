@@ -12,6 +12,7 @@ target_compile_options(${TARGET}
 )
 target_sources(${TARGET}
   PRIVATE
+    exception.cpp
     state_machine.c
     token.cpp
 )
