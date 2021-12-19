@@ -24,7 +24,7 @@ int main() {
 
     for (auto const &src : sources) {
       auto lexer = claire::Lexer{"../../tests/data/" + src};
-      expect(throws([&]() { lexer.lex(); })) << "throws any exception";
+      expect(throws([&]() { lexer.lex(); }));
     }
   };
 }

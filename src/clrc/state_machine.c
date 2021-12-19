@@ -134,7 +134,7 @@ uint8_t const lex_trans[offset(Count)] = {
   [state(OperatorSingle) + offset(Digit)]       = state(Numeral),
   [state(OperatorSingle) + offset(Separator)]   = state(Separator),
   [state(OperatorSingle) + offset(Operator)]    = state(OperatorSingle),
-  [state(OperatorSingle) + offset(VerticalBar)] = state(Error),
+  [state(OperatorSingle) + offset(VerticalBar)] = state(OperatorMulti),
 
   [state(OperatorMulti) + offset(Layout)]      = state(OperatorMultiEnd),
   [state(OperatorMulti) + offset(Space)]       = state(OperatorMultiEnd),
