@@ -1,2 +1,5 @@
+# Development
+.idea/
+
 # Build
 cmake-build-*/
