@@ -59,18 +59,29 @@ namespace claire {
     friend std::ostream &operator<<(std::ostream &os, Token const &tok);
   };
 
+#define TOKEN_DESC(kind, desc)                                                           \
+  case (kind):                                                                             \
+    os << (desc);                                                                          \
+    break
+
   inline std::ostream &operator<<(std::ostream &os, Token const &tok) {
-    static constexpr std::string_view names[]{
-      "Identifier",
-      "Numeral",
-      "Separator",
-      "Operator",
-      "Operator",
-      "Reserved",
-      "Reserved",
-      "Reserved",
-    };
-    return os << std::setw(12) << names[utype(tok.kind)] << " | " << tok.repr << " |";
+    os << std::setw(12);
+
+    switch (tok.kind) {
+      TOKEN_DESC(TokenKind::eIdentifier, "Identifier");
+      TOKEN_DESC(TokenKind::eNumeral, "Numeral");
+      TOKEN_DESC(TokenKind::eSeparator, "Separator");
+      TOKEN_DESC(TokenKind::eOperator, "Operator");
+      TOKEN_DESC(TokenKind::ePipe, "Operator");
+      TOKEN_DESC(TokenKind::eReservedLet, "Keyword");
+      TOKEN_DESC(TokenKind::eReservedIf, "Keyword");
+      TOKEN_DESC(TokenKind::eReservedElse, "Keyword");
+    default:
+      os << "Unknown";
+      break;
+    }
+
+    return os << " | " << tok.repr << " |";
   }
 
 } // namespace claire
