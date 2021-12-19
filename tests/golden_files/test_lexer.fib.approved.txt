@@ -1,0 +1,40 @@
+fib.clr
+
+
+[0] =     Reserved | let |
+[1] =   Identifier | fib |
+[2] =    Separator | \ |
+[3] =   Identifier | x |
+[4] =    Separator | : |
+[5] =   Identifier | Integer |
+[6] =     Operator | = |
+[7] =     Reserved | if |
+[8] =   Identifier | x |
+[9] =     Operator | < |
+[10] =      Numeral | 3 |
+[11] =      Numeral | 1 |
+[12] =     Reserved | else |
+[13] =   Identifier | fib |
+[14] =     Operator | ( |
+[15] =   Identifier | x |
+[16] =     Operator | - |
+[17] =      Numeral | 1 |
+[18] =     Operator | ) |
+[19] =     Operator | + |
+[20] =   Identifier | fib |
+[21] =     Operator | ( |
+[22] =   Identifier | x |
+[23] =     Operator | - |
+[24] =      Numeral | 2 |
+[25] =     Operator | ) |
+[26] =      Numeral | 40 |
+[27] =     Operator | > |
+[28] =   Identifier | fib |
+[29] =     Operator | ( |
+[30] =     Operator | ) |
+[31] =     Operator | > |
+[32] =   Identifier | IO |
+[33] =   Identifier | puts |
+[34] =     Operator | ( |
+[35] =     Operator | ) |
+
