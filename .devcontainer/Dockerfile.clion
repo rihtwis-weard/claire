@@ -1,0 +1,53 @@
+FROM conanio/gcc10:1.43.0 AS base
+
+ENV DEBIAN_FRONTEND="noninteractive"
+
+# Switch to root user for installing updates and dependencies
+USER root
+
+# Install build dependencies
+RUN apt-get update \
+  && apt-get install -y \
+    ssh \
+    cmake \
+    ninja-build \
+    gdb \
+    valgrind \
+    locales-all \
+    dos2unix \
+    rsync \
+  && apt-get clean
+
+
+# SSH Daemon + SFTP Server
+RUN ( \
+    echo 'LogLevel DEBUG2'; \
+    echo 'PermitRootLogin yes'; \
+    echo 'PasswordAuthentication yes'; \
+    echo 'Subsystem sftp /usr/lib/openssh/sftp-server'; \
+  ) > /etc/ssh/sshd_config_clion \
+  && mkdir /run/sshd
+
+# User Setup
+RUN useradd -m clion \
+  && yes password | passwd clion
+
+RUN usermod -aG sudo -s /bin/bash clion
+
+# Pre-install project dependencies
+USER clion
+
+WORKDIR /home/clion
+
+ENV CMAKE_BUILD_DIR="cmake-build-debug"
+ENV PATH=/opt/pyenv/shims:${PATH}
+
+COPY --chown=clion:clion conanfile.py /tmp
+RUN mkdir -m 777 "/tmp/${CMAKE_BUILD_DIR}"
+RUN conan profile new default --detect
+RUN conan profile update settings.compiler.libcxx=libstdc++11 default
+RUN conan install /tmp --install-folder "/tmp/${CMAKE_BUILD_DIR}" --update
+
+# Switch back to root user to start sshd
+USER root
+CMD ["/usr/sbin/sshd", "-D", "-e", "-f", "/etc/ssh/sshd_config_clion"]
