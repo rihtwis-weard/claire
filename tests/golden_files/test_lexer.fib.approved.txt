@@ -34,7 +34,8 @@ fib.clr
 [30] =     Operator | ) |
 [31] =     Operator | > |
 [32] =   Identifier | IO |
-[33] =   Identifier | puts |
-[34] =     Operator | ( |
-[35] =     Operator | ) |
+[33] =     Operator | . |
+[34] =   Identifier | puts |
+[35] =     Operator | ( |
+[36] =     Operator | ) |
 

@@ -20,6 +20,7 @@ uint16_t const ch_to_eqc[256] = {
   [')']        = offset(Operator),
   ['+']        = offset(Operator),
   ['-']        = offset(Operator),
+  ['.']        = offset(Operator),
   [':']        = offset(Separator),
   ['<']        = offset(Operator),
   ['=']        = offset(Operator),
@@ -43,10 +44,12 @@ int const ch_reeval[256] = {
   [')']        = -1,
   ['+']        = -1,
   ['-']        = -1,
+  ['.']        = -1,
   [':']        = -1,
   ['<']        = -1,
   ['=']        = -1,
   ['>']        = -1,
+  ['\\']       = -1,
   // Digits
   [48 ... 57]  = -1,
   // Letters
