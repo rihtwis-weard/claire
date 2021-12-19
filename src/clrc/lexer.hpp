@@ -44,6 +44,7 @@ namespace claire {
           tok.kind = TokenKind::eIdentifier;
           break;
         }
+        case LexicalState::eOperatorMultiEnd:
         case LexicalState::eIdentifierEnd: {
           tok.update_repr(src_ptr, 1, 0);
           tok.to_hyponym();
@@ -76,7 +77,7 @@ namespace claire {
           tokens_.push_back(tok);
           break;
         }
-        case LexicalState::eOperator: {
+        case LexicalState::eOperatorSingle: {
           tok.kind = TokenKind::eOperator;
           tok.update_repr(src_ptr, 0, 0);
 

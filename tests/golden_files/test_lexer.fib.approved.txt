@@ -28,11 +28,11 @@ fib.clr
 [24] =      Numeral | 2 |
 [25] =     Operator | ) |
 [26] =      Numeral | 40 |
-[27] =     Operator | > |
+[27] =     Operator | |> |
 [28] =   Identifier | fib |
 [29] =     Operator | ( |
 [30] =     Operator | ) |
-[31] =     Operator | > |
+[31] =     Operator | |> |
 [32] =   Identifier | IO |
 [33] =     Operator | . |
 [34] =   Identifier | puts |

@@ -14,6 +14,9 @@ namespace claire {
     eSeparator,
     eOperator,
 
+    // Special Operators
+    ePipe,
+
     // Reserved Keywords
     eReservedLet,
     eReservedIf,
@@ -61,6 +64,7 @@ namespace claire {
       "Identifier",
       "Numeral",
       "Separator",
+      "Operator",
       "Operator",
       "Reserved",
       "Reserved",

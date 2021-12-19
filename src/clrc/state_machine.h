@@ -8,6 +8,7 @@
 
 namespace claire {
 
+  // TODO(rihtwis-weard): rename to Glyph?
   enum class CharType {
     eLayout,
     eSpace,
@@ -17,6 +18,7 @@ namespace claire {
     eDigit,
     eSeparator,
     eOperator,
+    eVerticalBar,
     eQuote,
     eEOF,
     eCount
@@ -26,7 +28,9 @@ namespace claire {
     eFinal,
     eNextChar,
     eSeparator,
-    eOperator,
+    eOperatorSingle,
+    eOperatorMulti,
+    eOperatorMultiEnd,
     eIdentifier,
     eIdentifierEnd,
     eNumeral,
@@ -41,7 +45,7 @@ namespace claire {
   // Character equivalence classes
   extern "C" std::uint16_t const ch_to_eqc[256];
   // Character re-evaluations
-  extern "C" int const ch_reeval[256];
+  extern "C" int const           ch_reeval[256];
 
   // Lexical state transitions
   extern "C" std::uint8_t const
@@ -61,7 +65,7 @@ namespace claire {
     return utype(curr) <= utype(LexicalState::eFinal);
   }
 
-} // namespace clair
+} // namespace claire
 
 #else
 
@@ -76,6 +80,7 @@ typedef enum {
   eCharTypeDigit,
   eCharTypeSeparator,
   eCharTypeOperator,
+  eCharTypeVerticalBar,
   eCharTypeQuote,
   eCharTypeEOF,
   eCharTypeCount
@@ -85,7 +90,9 @@ typedef enum {
   eLexicalStateFinal,
   eLexicalStateNextChar,
   eLexicalStateSeparator,
-  eLexicalStateOperator,
+  eLexicalStateOperatorSingle,
+  eLexicalStateOperatorMulti,
+  eLexicalStateOperatorMultiEnd,
   eLexicalStateIdentifier,
   eLexicalStateIdentifierEnd,
   eLexicalStateNumeral,
