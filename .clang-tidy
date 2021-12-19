@@ -1,0 +1,1 @@
+Checks: 'bugprone-*, modernize-*, diagnostic-*, analyzer-*, readability-*, performance-*, -clang-diagnostic-c++17-extensions', -modernize-use-trailing-return
