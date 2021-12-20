@@ -10,6 +10,7 @@ namespace claire {
   enum class TokenKind {
     // General Tokens
     eIdentifier,
+    eStringLiteral,
     eNumeral,
     eSeparator,
     eOperator,
@@ -60,8 +61,8 @@ namespace claire {
   };
 
 #define TOKEN_DESC(kind, desc)                                                           \
-  case (kind):                                                                             \
-    os << (desc);                                                                          \
+  case (kind):                                                                           \
+    os << (desc);                                                                        \
     break
 
   inline std::ostream &operator<<(std::ostream &os, Token const &tok) {
@@ -69,6 +70,7 @@ namespace claire {
 
     switch (tok.kind) {
       TOKEN_DESC(TokenKind::eIdentifier, "Identifier");
+      TOKEN_DESC(TokenKind::eStringLiteral, "String");
       TOKEN_DESC(TokenKind::eNumeral, "Numeral");
       TOKEN_DESC(TokenKind::eSeparator, "Separator");
       TOKEN_DESC(TokenKind::eOperator, "Operator");

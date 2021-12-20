@@ -15,7 +15,10 @@ uint16_t const ch_to_eqc[256] = {
   ['\n']       = offset(LineFeed),
   [11 ... 31]  = offset(Layout),
   [' ']        = offset(Space),
+  // String Literals
+  ['"']        = offset(DoubleQuote),
   // Special
+  ['!']        = offset(Operator),
   ['(']        = offset(Operator),
   [')']        = offset(Operator),
   ['+']        = offset(Operator),
@@ -72,6 +75,7 @@ uint8_t const lex_trans[offset(Count)] = {
   [state(NextChar) + offset(Separator)]   = state(Separator),
   [state(NextChar) + offset(Operator)]    = state(OperatorSingle),
   [state(NextChar) + offset(VerticalBar)] = state(OperatorMulti),
+  [state(NextChar) + offset(DoubleQuote)] = state(String),
 
   [state(NewLine) + offset(Layout)]      = state(NextChar),
   [state(NewLine) + offset(Space)]       = state(NextChar),
@@ -81,6 +85,7 @@ uint8_t const lex_trans[offset(Count)] = {
   [state(NewLine) + offset(Separator)]   = state(Separator),
   [state(NewLine) + offset(Operator)]    = state(OperatorSingle),
   [state(NewLine) + offset(VerticalBar)] = state(OperatorMulti),
+  [state(NewLine) + offset(DoubleQuote)] = state(String),
 
   [state(Identifier) + offset(Layout)]      = state(IdentifierEnd),
   [state(Identifier) + offset(Space)]       = state(IdentifierEnd),
@@ -90,6 +95,7 @@ uint8_t const lex_trans[offset(Count)] = {
   [state(Identifier) + offset(Separator)]   = state(IdentifierEnd),
   [state(Identifier) + offset(Operator)]    = state(IdentifierEnd),
   [state(Identifier) + offset(VerticalBar)] = state(IdentifierEnd),
+  [state(Identifier) + offset(DoubleQuote)] = state(IdentifierEnd),
 
   [state(IdentifierEnd) + offset(Layout)]      = state(NextChar),
   [state(IdentifierEnd) + offset(Space)]       = state(NextChar),
@@ -99,6 +105,28 @@ uint8_t const lex_trans[offset(Count)] = {
   [state(IdentifierEnd) + offset(Separator)]   = state(Separator),
   [state(IdentifierEnd) + offset(Operator)]    = state(OperatorSingle),
   [state(IdentifierEnd) + offset(VerticalBar)] = state(OperatorMulti),
+  [state(IdentifierEnd) + offset(DoubleQuote)] = state(String),
+
+  [state(String) + offset(Layout)]      = state(String),
+  [state(String) + offset(Space)]       = state(String),
+  [state(String) + offset(LineFeed)]    = state(Error),
+  [state(String) + offset(Letter)]      = state(String),
+  [state(String) + offset(Digit)]       = state(String),
+  [state(String) + offset(Separator)]   = state(String),
+  [state(String) + offset(Operator)]    = state(String),
+  [state(String) + offset(VerticalBar)] = state(String),
+  [state(String) + offset(DoubleQuote)] = state(StringEnd),
+  [state(String) + offset(EOF)]         = state(EOF),
+
+  [state(StringEnd) + offset(Layout)]      = state(NextChar),
+  [state(StringEnd) + offset(Space)]       = state(NextChar),
+  [state(StringEnd) + offset(LineFeed)]    = state(NewLine),
+  [state(StringEnd) + offset(Letter)]      = state(Identifier),
+  [state(StringEnd) + offset(Digit)]       = state(Numeral),
+  [state(StringEnd) + offset(Separator)]   = state(Separator),
+  [state(StringEnd) + offset(Operator)]    = state(OperatorSingle),
+  [state(StringEnd) + offset(VerticalBar)] = state(OperatorMulti),
+  [state(StringEnd) + offset(DoubleQuote)] = state(String),
 
   [state(Numeral) + offset(Layout)]      = state(NumeralEnd),
   [state(Numeral) + offset(Space)]       = state(NumeralEnd),
@@ -108,6 +136,8 @@ uint8_t const lex_trans[offset(Count)] = {
   [state(Numeral) + offset(Separator)]   = state(NumeralEnd),
   [state(Numeral) + offset(Operator)]    = state(NumeralEnd),
   [state(Numeral) + offset(VerticalBar)] = state(NumeralEnd),
+  [state(Numeral) + offset(DoubleQuote)] = state(NumeralEnd),
+  [state(Numeral) + offset(EOF)]         = state(EOF),
 
   [state(NumeralEnd) + offset(Layout)]      = state(NextChar),
   [state(NumeralEnd) + offset(Space)]       = state(NextChar),
@@ -117,6 +147,7 @@ uint8_t const lex_trans[offset(Count)] = {
   [state(NumeralEnd) + offset(Separator)]   = state(Separator),
   [state(NumeralEnd) + offset(Operator)]    = state(OperatorSingle),
   [state(NumeralEnd) + offset(VerticalBar)] = state(OperatorMulti),
+  [state(NumeralEnd) + offset(DoubleQuote)] = state(String),
 
   [state(Separator) + offset(Layout)]      = state(NextChar),
   [state(Separator) + offset(Space)]       = state(NextChar),
@@ -126,6 +157,7 @@ uint8_t const lex_trans[offset(Count)] = {
   [state(Separator) + offset(Separator)]   = state(Separator),
   [state(Separator) + offset(Operator)]    = state(OperatorSingle),
   [state(Separator) + offset(VerticalBar)] = state(OperatorMulti),
+  [state(Separator) + offset(DoubleQuote)] = state(String),
 
   [state(OperatorSingle) + offset(Layout)]      = state(NextChar),
   [state(OperatorSingle) + offset(Space)]       = state(NextChar),
@@ -135,6 +167,7 @@ uint8_t const lex_trans[offset(Count)] = {
   [state(OperatorSingle) + offset(Separator)]   = state(Separator),
   [state(OperatorSingle) + offset(Operator)]    = state(OperatorSingle),
   [state(OperatorSingle) + offset(VerticalBar)] = state(OperatorMulti),
+  [state(OperatorSingle) + offset(DoubleQuote)] = state(String),
 
   [state(OperatorMulti) + offset(Layout)]      = state(OperatorMultiEnd),
   [state(OperatorMulti) + offset(Space)]       = state(OperatorMultiEnd),
@@ -144,6 +177,8 @@ uint8_t const lex_trans[offset(Count)] = {
   [state(OperatorMulti) + offset(Separator)]   = state(OperatorMultiEnd),
   [state(OperatorMulti) + offset(Operator)]    = state(OperatorMulti),
   [state(OperatorMulti) + offset(VerticalBar)] = state(Error),
+  [state(OperatorMulti) + offset(DoubleQuote)] = state(OperatorMultiEnd),
+  [state(OperatorMulti) + offset(EOF)]         = state(EOF),
 
   [state(OperatorMultiEnd) + offset(Layout)]      = state(NextChar),
   [state(OperatorMultiEnd) + offset(Space)]       = state(NextChar),
@@ -153,15 +188,17 @@ uint8_t const lex_trans[offset(Count)] = {
   [state(OperatorMultiEnd) + offset(Separator)]   = state(Separator),
   [state(OperatorMultiEnd) + offset(Operator)]    = state(OperatorSingle),
   [state(OperatorMultiEnd) + offset(VerticalBar)] = state(OperatorMulti),
+  [state(OperatorMultiEnd) + offset(DoubleQuote)] = state(String),
 };
 
 // True if inside of an identifier, value, or special multi-character operator
 uint8_t const lex_inside[offset(Count)] = {
-  [eLexicalStateIdentifier]     = 1,
-  [eLexicalStateNumeral]        = 1,
   [eLexicalStateSeparator]      = 1,
   [eLexicalStateOperatorSingle] = 1,
   [eLexicalStateOperatorMulti]  = 1,
+  [eLexicalStateIdentifier]     = 1,
+  [eLexicalStateNumeral]        = 1,
+  [eLexicalStateString]         = 1,
 };
 
 #pragma GCC diagnostic pop

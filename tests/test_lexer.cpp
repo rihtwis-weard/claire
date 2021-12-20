@@ -20,7 +20,9 @@ int main() {
   };
 
   "exception"_test = []() {
-    std::string sources[]{"unsupported_multi_operator.clr"};
+    std::string sources[]{
+      "unsupported_multi_operator.clr",
+    };
 
     for (auto const &src : sources) {
       auto lexer = claire::Lexer{"../../tests/data/" + src};

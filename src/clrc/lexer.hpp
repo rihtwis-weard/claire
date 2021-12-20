@@ -59,6 +59,17 @@ namespace claire {
           tokens_.push_back(tok);
           break;
         }
+        case LexicalState::eString: {
+          tok.kind = TokenKind::eStringLiteral;
+          break;
+        }
+        case LexicalState::eStringEnd: {
+          tok.update_repr(src_ptr, 1, 1);
+          src_ptr += ch_reeval[ch];
+          tok.reset();
+          tokens_.push_back(tok);
+          break;
+        }
         case LexicalState::eNumeral: {
           tok.kind = TokenKind::eNumeral;
           break;
