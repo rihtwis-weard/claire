@@ -65,6 +65,8 @@ int const ch_reeval[256] = {
 
 #define state(s) (eLexicalState##s)
 
+// TODO(rihtwis-weard): can use many more short-hand macros for beginning/terminating glyphs
+
 // Lexical analysis state transitions
 uint8_t const lex_trans[offset(Count)] = {
   [state(NextChar) + offset(Layout)]      = state(NextChar),

@@ -57,11 +57,11 @@ namespace claire {
   extern "C" std::uint8_t const lex_inside[utype(CharType::eCount)];
 
   // Apply state transition using current state and equivalence class
-  auto next_state(LexicalState curr, std::uint16_t eqc) {
+  inline auto next_state(LexicalState curr, std::uint16_t eqc) {
     return static_cast<LexicalState>(lex_trans[utype(curr) + eqc]);
   }
 
-  auto should_exit(LexicalState curr) {
+  inline auto should_exit(LexicalState curr) {
     // Since LexicalState::eFinal is 0, by default we break out when
     // state transitions are not explicitly handled
     return utype(curr) <= utype(LexicalState::eFinal);
