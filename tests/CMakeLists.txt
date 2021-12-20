@@ -14,6 +14,7 @@ function(add_claire_test TARGET ENTRY)
   target_sources(${TEST_EXE}
     PRIVATE
       ${CMAKE_SOURCE_DIR}/src/clrc/exception.cpp
+      ${CMAKE_SOURCE_DIR}/src/clrc/lexer.cpp
       ${CMAKE_SOURCE_DIR}/src/clrc/state_machine.c
       ${CMAKE_SOURCE_DIR}/src/clrc/token.cpp
   )
