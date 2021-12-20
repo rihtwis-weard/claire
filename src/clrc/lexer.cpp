@@ -14,8 +14,8 @@ namespace claire {
     char *src_ptr = source_.data();
 
     do {
-      int  ch;
-      auto eqc = ch_to_eqc[(ch = *src_ptr++)];
+      unsigned char ch;
+      auto          eqc = ch_to_eqc[(ch = *src_ptr++)];
 
       state_ = next_state(state_, eqc);
       tok.len += lex_inside[utype(state_)];
