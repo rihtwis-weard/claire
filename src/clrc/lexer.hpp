@@ -4,9 +4,10 @@
 
 #include "exception.hpp"
 #include "state_machine.h"
-#include "token.hpp"
+#include "token.h"
 
 namespace claire {
+
   class Lexer {
     LexicalState       state_;
     std::string        source_;

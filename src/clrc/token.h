@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef __cplusplus
+
 #include <iomanip>
 
 #include <robin_hood.h>
@@ -16,6 +18,7 @@ namespace claire {
     eOperator,
 
     // Special Operators
+    eAccess,
     ePipe,
 
     // Reserved Keywords
@@ -74,6 +77,7 @@ namespace claire {
       TOKEN_DESC(TokenKind::eNumeral, "Numeral");
       TOKEN_DESC(TokenKind::eSeparator, "Separator");
       TOKEN_DESC(TokenKind::eOperator, "Operator");
+      TOKEN_DESC(TokenKind::eAccess, "Operator");
       TOKEN_DESC(TokenKind::ePipe, "Operator");
       TOKEN_DESC(TokenKind::eReservedLet, "Keyword");
       TOKEN_DESC(TokenKind::eReservedIf, "Keyword");
@@ -87,3 +91,21 @@ namespace claire {
   }
 
 } // namespace claire
+
+#else
+
+typedef enum {
+  eTokenKindIdentifier,
+  eTokenKindStringLiteral,
+  eTokenKindNumeral,
+  eTokenKindSeparator,
+  eTokenKindOperator,
+  eTokenKindAccess,
+  eTokenKindPipe,
+  eTokenKindReservedLet,
+  eTokenKindReservedIf,
+  eTokenKindReservedElse,
+  eTokenKindCount,
+} TokenKind;
+
+#endif

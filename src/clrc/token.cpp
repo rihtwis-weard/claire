@@ -1,7 +1,9 @@
-#include "token.hpp"
+#include "token.h"
 
 namespace claire {
   robin_hood::unordered_map<std::string, TokenKind> const token_map = {
+    // Operators
+    {".", TokenKind::eAccess},
     // Special Multi Operators
     {"|>", TokenKind::ePipe},
     // Reserved Keywords

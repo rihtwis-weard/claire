@@ -1,9 +1,10 @@
 #include "state_machine.h"
+#include "token.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 
-#define offset(e) (eCharType##e * eLexicalStateCount)
+#define offset(e) (eGlyph##e * eLexicalStateCount)
 
 // Character equivalence classes are used to index into a
 // lexical transition state machine. Offsets are premultiplied to
@@ -65,8 +66,6 @@ int const ch_reeval[256] = {
 
 #define state(s) (eLexicalState##s)
 
-// TODO(rihtwis-weard): can use many more short-hand macros for beginning/terminating glyphs
-
 // state transitions that always serve to initiate a new lexeme after terminating an existing one
 // clang-format off
 #define initiating_states(s)                                   \
@@ -81,6 +80,9 @@ int const ch_reeval[256] = {
   [state(s) + offset(DoubleQuote)] = state(String)
 // clang-format on
 
+#define reduce(prev_state, transition, next_state)                                       \
+  [state(prev_state) + offset(transition)] = state(next_state)
+
 // Lexical analysis state transitions
 uint8_t const lex_trans[offset(Count)] = {
   initiating_states(NextChar),
@@ -92,26 +94,26 @@ uint8_t const lex_trans[offset(Count)] = {
   initiating_states(OperatorSingle),
   initiating_states(OperatorMultiEnd),
 
-  [state(Identifier) + offset(Layout)]      = state(IdentifierEnd),
-  [state(Identifier) + offset(Space)]       = state(IdentifierEnd),
-  [state(Identifier) + offset(LineFeed)]    = state(IdentifierEnd),
-  [state(Identifier) + offset(Letter)]      = state(Identifier),
-  [state(Identifier) + offset(Digit)]       = state(Identifier),
-  [state(Identifier) + offset(Separator)]   = state(IdentifierEnd),
-  [state(Identifier) + offset(Operator)]    = state(IdentifierEnd),
-  [state(Identifier) + offset(VerticalBar)] = state(IdentifierEnd),
-  [state(Identifier) + offset(DoubleQuote)] = state(IdentifierEnd),
+  reduce(Identifier, Layout, IdentifierEnd),
+  reduce(Identifier, Space, IdentifierEnd),
+  reduce(Identifier, LineFeed, IdentifierEnd),
+  reduce(Identifier, Letter, Identifier),
+  reduce(Identifier, Digit, Identifier),
+  reduce(Identifier, Separator, IdentifierEnd),
+  reduce(Identifier, Operator, IdentifierEnd),
+  reduce(Identifier, VerticalBar, IdentifierEnd),
+  reduce(Identifier, DoubleQuote, IdentifierEnd),
 
-  [state(String) + offset(Layout)]      = state(String),
-  [state(String) + offset(Space)]       = state(String),
-  [state(String) + offset(LineFeed)]    = state(Error),
-  [state(String) + offset(Letter)]      = state(String),
-  [state(String) + offset(Digit)]       = state(String),
-  [state(String) + offset(Separator)]   = state(String),
-  [state(String) + offset(Operator)]    = state(String),
-  [state(String) + offset(VerticalBar)] = state(String),
-  [state(String) + offset(DoubleQuote)] = state(StringEnd),
-  [state(String) + offset(EOF)]         = state(EOF),
+  reduce(String, Layout, String),
+  reduce(String, Space, String),
+  reduce(String, LineFeed, Error),
+  reduce(String, Letter, String),
+  reduce(String, Digit, String),
+  reduce(String, Separator, String),
+  reduce(String, Operator, String),
+  reduce(String, VerticalBar, String),
+  reduce(String, DoubleQuote, StringEnd),
+  reduce(String, EOF, EOF),
 
   [state(Numeral) + offset(Layout)]      = state(NumeralEnd),
   [state(Numeral) + offset(Space)]       = state(NumeralEnd),
@@ -144,6 +146,18 @@ uint8_t const lex_inside[offset(Count)] = {
   [eLexicalStateIdentifier]     = 1,
   [eLexicalStateNumeral]        = 1,
   [eLexicalStateString]         = 1,
+};
+
+#undef state
+#define state(s) (eParseState##s)
+
+#undef offset
+#define offset(e) (eTokenKind##e * eParseStateCount)
+
+#undef initiating_states
+
+uint8_t const parse_trans[offset(Count)] = {
+  reduce(NewScope, Identifier, Expr),
 };
 
 #pragma GCC diagnostic pop

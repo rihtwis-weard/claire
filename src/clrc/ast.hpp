@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <utility>
 
 namespace claire {
   class ASTNode {
@@ -18,19 +19,13 @@ namespace claire {
     }
   };
 
-  class Decl : public ASTNode {};
+  class Expr : public ASTNode {
+    std::string name_;
 
-  class Expr : public ASTNode {};
+  public:
+    explicit Expr(std::string name)
+      : name_{std::move(name)} {
+    }
+  };
 
-  class Stmt : public ASTNode {};
-
-  class ProgramDecl : public Decl {};
-
-  class FunctionDecl : public Decl {};
-
-  class VariableDecl : public Decl {};
-
-  class IfStmt : public Stmt {};
-
-  class ReturnStmt : public Stmt {};
 } // namespace claire
