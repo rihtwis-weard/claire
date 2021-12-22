@@ -5,7 +5,8 @@
 namespace claire {
 
   auto Parser::next_state(ParseState prev, Token const &token) {
-    return static_cast<ParseState>(parse_trans[utype(prev) + utype(token.kind)]);
+    return static_cast<ParseState>(
+      parse_trans[utype(prev) + (utype(token.kind) * utype(ParseState::eCount))]);
   }
 
   std::unique_ptr<ASTNode> Parser::parse(std::vector<Token> const &tokens) {
@@ -20,9 +21,8 @@ namespace claire {
       }
 
       switch (state) {
-      case ParseState::eExpr: {
-        auto expr = parse_expr(state, tok);
-        std::cout << "Expression: | " << tok->repr << " |" << std::endl;
+      case ParseState::eIdentifierExpr: {
+        root->add(parse_identifier_expr(state, tok));
         break;
       }
       default:
@@ -33,19 +33,57 @@ namespace claire {
     return root;
   }
 
-  std::unique_ptr<Expr> Parser::parse_expr(
+  std::unique_ptr<Expr> Parser::parse_identifier_expr(
     ParseState &state, std::vector<Token>::const_iterator tok) {
-    auto node = std::make_unique<Expr>(tok->repr);
+    std::unique_ptr<IdentifierExpr> node = std::make_unique<IdentifierExpr>(tok->repr);
 
-    for (; state > ParseState::eFinal; state = next_state(state, *(++tok))) {
-      if (state = next_state(state, *tok); state <= ParseState::eFinal) {
+    for (; state > ParseState::eFinal;) {
+      if (state = next_state(state, *(++tok)); state <= ParseState::eFinal) {
         return node;
       }
 
       switch (state) {
-
+      case ParseState::eNewAccessExpr: {
+        return parse_access_expr(tok, std::move(node));
+      }
       default:
         break;
+      }
+    }
+
+    return node;
+  }
+
+  std::unique_ptr<Expr> Parser::parse_access_expr(
+    std::vector<Token>::const_iterator tok, std::unique_ptr<IdentifierExpr> &&expr) {
+
+    std::unique_ptr<Expr> node = std::make_unique<AccessExpr>(std::move(expr));
+
+    for (auto state = ParseState::eNewAccessExpr; state > ParseState::eFinal;) {
+      if (state = next_state(state, *(++tok)); state <= ParseState::eFinal) {
+        return node;
+      }
+
+      if (state == ParseState::eGrowAccessExpr) {
+        node->add(std::make_unique<IdentifierExpr>(tok->repr));
+      } else if (state == ParseState::eFunctionCallExpr) {
+        node = parse_function_call_expr(tok, std::move(node));
+      }
+    }
+    return node;
+  }
+
+  std::unique_ptr<Expr> Parser::parse_function_call_expr(
+    std::vector<Token>::const_iterator tok, std::unique_ptr<Expr> &&callee) {
+    auto node = std::make_unique<FunctionCallExpr>(std::move(callee));
+
+    for (auto state = ParseState::eFunctionCallExpr; state > ParseState::eFinal;) {
+      if (state = next_state(state, *(++tok)); state <= ParseState::eFinal) {
+        return node;
+      }
+
+      if (state == ParseState::eFunctionArgs) {
+        node->add(std::make_unique<StringExpr>(tok->repr));
       }
     }
 

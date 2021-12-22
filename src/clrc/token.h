@@ -19,6 +19,7 @@ namespace claire {
 
     // Special Operators
     eAccess,
+    eLParens,
     ePipe,
 
     // Reserved Keywords
@@ -45,6 +46,15 @@ namespace claire {
       if (auto it = token_map.find(repr); it != token_map.end()) {
         auto [_, token_kind] = *it;
         kind                 = token_kind;
+      }
+    }
+
+    auto to_hyponym(TokenKind fallback) {
+      if (auto it = token_map.find(repr); it != token_map.end()) {
+        auto [_, token_kind] = *it;
+        kind                 = token_kind;
+      } else {
+        kind = fallback;
       }
     }
 
@@ -78,6 +88,7 @@ namespace claire {
       TOKEN_DESC(TokenKind::eSeparator, "Separator");
       TOKEN_DESC(TokenKind::eOperator, "Operator");
       TOKEN_DESC(TokenKind::eAccess, "Operator");
+      TOKEN_DESC(TokenKind::eLParens, "Operator");
       TOKEN_DESC(TokenKind::ePipe, "Operator");
       TOKEN_DESC(TokenKind::eReservedLet, "Keyword");
       TOKEN_DESC(TokenKind::eReservedIf, "Keyword");
@@ -101,6 +112,7 @@ typedef enum {
   eTokenKindSeparator,
   eTokenKindOperator,
   eTokenKindAccess,
+  eTokenKindLParens,
   eTokenKindPipe,
   eTokenKindReservedLet,
   eTokenKindReservedIf,

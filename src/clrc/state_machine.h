@@ -46,7 +46,13 @@ namespace claire {
   enum class ParseState {
     eFinal,
     eNewScope,
-    eExpr,
+    eIdentifierExpr,
+    eNewAccessExpr,
+    eContAccessExpr,
+    eGrowAccessExpr,
+    eFunctionCallExpr,
+    eFunctionArgs,
+    eError,
     eCount,
   };
 
@@ -120,7 +126,13 @@ typedef enum {
 typedef enum {
   eParseStateFinal,
   eParseStateNewScope,
-  eParseStateExpr,
+  eParseStateIdentifierExpr,
+  eParseStateNewAccessExpr,
+  eParseStateContAccessExpr,
+  eParseStateGrowAccessExpr,
+  eParseStateFunctionCallExpr,
+  eParseStateFunctionArgs,
+  eParseStateError,
   eParseStateCount,
 } ParseState;
 

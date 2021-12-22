@@ -27,3 +27,4 @@ function(add_claire_test TARGET ENTRY)
 endfunction()
 
 add_claire_test(lexer test_lexer.cpp)
+add_claire_test(parser test_parser.cpp)

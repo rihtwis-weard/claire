@@ -4,6 +4,7 @@ namespace claire {
   robin_hood::unordered_map<std::string, TokenKind> const token_map = {
     // Operators
     {".", TokenKind::eAccess},
+    {"(", TokenKind::eLParens},
     // Special Multi Operators
     {"|>", TokenKind::ePipe},
     // Reserved Keywords
