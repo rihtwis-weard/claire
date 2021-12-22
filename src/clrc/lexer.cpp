@@ -14,8 +14,8 @@ namespace claire {
     char *src_ptr = source_.data();
 
     do {
-      int  ch;
-      auto eqc = ch_to_eqc[(ch = *src_ptr++)];
+      unsigned char ch;
+      auto          eqc = ch_to_eqc[(ch = *src_ptr++)];
 
       state_ = next_state(state_, eqc);
       tok.len += lex_inside[utype(state_)];
@@ -79,8 +79,8 @@ namespace claire {
         break;
       }
       case LexicalState::eOperatorSingle: {
-        tok.kind = TokenKind::eOperator;
         tok.update_repr(src_ptr, 0, 0);
+        tok.to_hyponym(TokenKind::eOperator);
 
         tok.reset();
         tokens_.push_back(tok);

@@ -8,8 +8,7 @@
 
 namespace claire {
 
-  // TODO(rihtwis-weard): rename to Glyph?
-  enum class CharType {
+  enum class Glyph {
     eLayout,
     eSpace,
     eCarriageReturn,
@@ -44,6 +43,19 @@ namespace claire {
     eCount,
   };
 
+  enum class ParseState {
+    eFinal,
+    eNewScope,
+    eIdentifierExpr,
+    eNewAccessExpr,
+    eContAccessExpr,
+    eGrowAccessExpr,
+    eFunctionCallExpr,
+    eFunctionArgs,
+    eError,
+    eCount,
+  };
+
   // Character equivalence classes
   extern "C" std::uint16_t const ch_to_eqc[256];
   // Character re-evaluations
@@ -51,10 +63,10 @@ namespace claire {
 
   // Lexical state transitions
   extern "C" std::uint8_t const
-    lex_trans[utype(LexicalState::eCount) * utype(CharType::eCount)];
+    lex_trans[utype(LexicalState::eCount) * utype(Glyph::eCount)];
 
   // True (1) if inside lexeme
-  extern "C" std::uint8_t const lex_inside[utype(CharType::eCount)];
+  extern "C" std::uint8_t const lex_inside[utype(Glyph::eCount)];
 
   // Apply state transition using current state and equivalence class
   inline auto next_state(LexicalState curr, std::uint16_t eqc) {
@@ -67,6 +79,9 @@ namespace claire {
     return utype(curr) <= utype(LexicalState::eFinal);
   }
 
+  extern "C" std::uint8_t const
+    parse_trans[utype(ParseState::eCount) * utype(LexicalState::eCount)];
+
 } // namespace claire
 
 #else
@@ -74,19 +89,19 @@ namespace claire {
 #include <stdint.h>
 
 typedef enum {
-  eCharTypeLayout,
-  eCharTypeSpace,
-  eCharTypeCarriageReturn,
-  eCharTypeLineFeed,
-  eCharTypeLetter,
-  eCharTypeDigit,
-  eCharTypeSeparator,
-  eCharTypeOperator,
-  eCharTypeVerticalBar,
-  eCharTypeDoubleQuote,
-  eCharTypeEOF,
-  eCharTypeCount
-} CharType;
+  eGlyphLayout,
+  eGlyphSpace,
+  eGlyphCarriageReturn,
+  eGlyphLineFeed,
+  eGlyphLetter,
+  eGlyphDigit,
+  eGlyphSeparator,
+  eGlyphOperator,
+  eGlyphVerticalBar,
+  eGlyphDoubleQuote,
+  eGlyphEOF,
+  eGlyphCount
+} Glyph;
 
 typedef enum {
   eLexicalStateFinal,
@@ -107,5 +122,18 @@ typedef enum {
   eLexicalStateError,
   eLexicalStateCount,
 } LexicalState;
+
+typedef enum {
+  eParseStateFinal,
+  eParseStateNewScope,
+  eParseStateIdentifierExpr,
+  eParseStateNewAccessExpr,
+  eParseStateContAccessExpr,
+  eParseStateGrowAccessExpr,
+  eParseStateFunctionCallExpr,
+  eParseStateFunctionArgs,
+  eParseStateError,
+  eParseStateCount,
+} ParseState;
 
 #endif

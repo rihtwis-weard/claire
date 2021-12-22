@@ -14,6 +14,7 @@ target_sources(${TARGET}
   PRIVATE
     exception.cpp
     lexer.cpp
+    parser.cpp
     state_machine.c
     token.cpp
 )
