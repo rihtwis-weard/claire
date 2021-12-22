@@ -4,6 +4,8 @@
 #include <memory>
 #include <utility>
 
+#include <llvm/IR/Value.h>
+
 namespace claire {
   class ASTNode {
   protected:
@@ -29,6 +31,10 @@ namespace claire {
       }
       return repr;
     }
+
+  public:
+    virtual ~ASTNode()             = default;
+    virtual llvm::Value *codegen() = 0;
   };
 
   class Expr : public ASTNode {};
@@ -44,6 +50,8 @@ namespace claire {
     [[nodiscard]] std::string to_string() const override {
       return "StringLiteral: " + name_;
     }
+
+    llvm::Value *codegen() override;
   };
 
   class IdentifierExpr : public Expr {
@@ -89,6 +97,8 @@ namespace claire {
     [[nodiscard]] std::string to_string() const override {
       return "FunctionCall: " + callee_->to_string();
     }
+
+    llvm::Value *codegen() override;
   };
 
 } // namespace claire

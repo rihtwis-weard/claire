@@ -12,6 +12,7 @@ target_compile_options(${TARGET}
 )
 target_sources(${TARGET}
   PRIVATE
+    codegen.cpp
     exception.cpp
     lexer.cpp
     parser.cpp
