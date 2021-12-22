@@ -6,63 +6,39 @@
 
 namespace claire {
   class ASTNode {
-    std::size_t level_;
-
   protected:
     std::vector<std::unique_ptr<ASTNode>> children_;
 
   public:
-    explicit ASTNode(std::size_t level = 0)
-      : level_{level} {
-    }
-
     void add(std::unique_ptr<ASTNode> &&node) {
-      node->level_ = level_ + 1;
-      for (auto &child : children_) {
-        child->level_ = level_ + 2;
-      }
       children_.emplace_back(std::move(node));
     }
-
-    //    void add(std::vector<std::unique_ptr<ASTNode>> &&nodes) {
-    //      children_.insert(children_.end(), std::make_move_iterator(nodes.begin()),
-    //        std::make_move_iterator(nodes.end()));
-    //    }
 
     [[nodiscard]] virtual std::string to_string() const {
       return "ASTNode: root";
     }
 
-    [[nodiscard]] std::string pretty_print() const {
+    [[nodiscard]] std::string pretty_print(std::size_t level = 0) const {
       std::string repr{};
-      for (std::size_t i = 0; i < level_; i++) {
-        repr += "    ";
+      for (std::size_t i = 0; i < level; i++) {
+        repr += "\t";
       }
       repr += "└──" + to_string() + "\n";
       for (auto const &child : children_) {
-        for (std::size_t i = 0; i < child->level_; i++) {
-          repr += "    ";
-        }
-        repr += "├──" + child->to_string() + "\n";
+        repr += child->pretty_print(level + 1);
       }
       return repr;
     }
   };
 
-  class Expr : public ASTNode {
-  public:
-    explicit Expr()
-      : ASTNode{} {
-    }
-  };
+  class Expr : public ASTNode {};
 
   class StringExpr : public Expr {
     std::string name_;
 
   public:
     explicit StringExpr(std::string name)
-      : Expr{}
-      , name_{std::move(name)} {
+      : name_{std::move(name)} {
     }
 
     [[nodiscard]] std::string to_string() const override {
@@ -92,8 +68,11 @@ namespace claire {
 
     [[nodiscard]] std::string to_string() const override {
       std::string repr{};
-      for (auto const &child : children_) {
-        repr += child->to_string() + ".";
+      for (std::size_t i = 0; i < children_.size(); i++) {
+        repr += children_.at(i)->to_string();
+        if (i != children_.size() - 1) {
+          repr += ".";
+        }
       }
       return "AccessExpression: " + repr;
     }
@@ -104,16 +83,11 @@ namespace claire {
 
   public:
     explicit FunctionCallExpr(std::unique_ptr<Expr> &&callee)
-      : Expr{}
-      , callee_{std::move(callee)} {
+      : callee_{std::move(callee)} {
     }
 
     [[nodiscard]] std::string to_string() const override {
-      std::string repr{"FunctionCall: " + callee_->to_string() + "\n"};
-      for (auto const &child : children_) {
-        repr += "├──" + child->to_string() + "\n";
-      }
-      return repr;
+      return "FunctionCall: " + callee_->to_string();
     }
   };
 

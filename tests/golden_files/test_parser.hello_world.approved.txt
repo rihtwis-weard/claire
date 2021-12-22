@@ -1,0 +1,4 @@
+└──ASTNode: root
+	└──FunctionCall: AccessExpression: IO.puts
+		└──StringLiteral: "Hello world!"
+
