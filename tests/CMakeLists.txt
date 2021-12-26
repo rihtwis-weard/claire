@@ -27,5 +27,6 @@ function(add_claire_test TARGET ENTRY)
   add_test(NAME ${TEST_EXE} COMMAND ${TEST_EXE})
 endfunction()
 
+add_claire_test(ir_codegen test_ir_codegen.cpp)
 add_claire_test(lexer test_lexer.cpp)
 add_claire_test(parser test_parser.cpp)

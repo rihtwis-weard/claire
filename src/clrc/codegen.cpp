@@ -10,6 +10,7 @@ namespace claire {
     return nullptr;
   }
 
+  // TODO(rihtwis-weard): use visitor pattern instead of member function
   llvm::Value *StringExpr::codegen(llvm::Module &module, llvm::IRBuilder<> &builder) {
     return builder.CreateGlobalStringPtr(name_);
   }

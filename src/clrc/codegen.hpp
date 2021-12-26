@@ -90,7 +90,7 @@ namespace claire {
       constexpr auto cpu      = "generic";
       constexpr auto features = "";
       auto           opts     = llvm::TargetOptions{};
-      auto           rm       = llvm::Optional<llvm::Reloc::Model>{llvm::Reloc::Model::PIC_};
+      auto           rm = llvm::Optional<llvm::Reloc::Model>{llvm::Reloc::Model::PIC_};
       auto           target_machine =
         target->createTargetMachine(target_triple, cpu, features, opts, rm);
 
