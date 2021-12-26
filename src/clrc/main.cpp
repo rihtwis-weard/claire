@@ -1,10 +1,13 @@
 #include <iostream>
 
+#include "codegen.hpp"
 #include "lexer.hpp"
 #include "parser.hpp"
 
 int main(int argc, char const *argv[]) {
-  auto tokens = claire::Lexer{"../../examples/hello_world.clr"}.lex();
+  auto source_fname = "../../examples/hello_world.clr";
+
+  auto tokens = claire::Lexer{source_fname}.lex();
   for (auto const &tok : tokens) {
     std::cout << tok << "\n";
   }
@@ -15,5 +18,6 @@ int main(int argc, char const *argv[]) {
   }
 
   auto ast = claire::Parser{}.parse(tokens);
+  claire::CodeGenerator{source_fname}.codegen(ast.get());
   return EXIT_SUCCESS;
 }
