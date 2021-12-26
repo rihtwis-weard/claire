@@ -13,6 +13,7 @@ function(add_claire_test TARGET ENTRY)
   )
   target_sources(${TEST_EXE}
     PRIVATE
+      ${CMAKE_SOURCE_DIR}/src/clrc/codegen.cpp
       ${CMAKE_SOURCE_DIR}/src/clrc/exception.cpp
       ${CMAKE_SOURCE_DIR}/src/clrc/parser.cpp
       ${CMAKE_SOURCE_DIR}/src/clrc/lexer.cpp
@@ -26,5 +27,6 @@ function(add_claire_test TARGET ENTRY)
   add_test(NAME ${TEST_EXE} COMMAND ${TEST_EXE})
 endfunction()
 
+add_claire_test(ir_codegen test_ir_codegen.cpp)
 add_claire_test(lexer test_lexer.cpp)
 add_claire_test(parser test_parser.cpp)

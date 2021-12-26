@@ -1,6 +1,5 @@
 from conans import ConanFile, CMake
 
-
 SETTINGS = (
   "os",
   "compiler",
@@ -11,6 +10,7 @@ SETTINGS = (
 REQUIRES = (
   "approvaltests.cpp/10.12.0",
   "boost-ext-ut/1.1.8",
+  "llvm-core/13.0.0",
   "robin-hood-hashing/3.11.3"
 )
 

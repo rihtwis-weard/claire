@@ -4,6 +4,10 @@
 #include <memory>
 #include <utility>
 
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/Module.h>
+#include <llvm/IR/Value.h>
+
 namespace claire {
   class ASTNode {
   protected:
@@ -29,6 +33,13 @@ namespace claire {
       }
       return repr;
     }
+
+    virtual ~ASTNode() = default;
+    virtual llvm::Value *codegen(llvm::Module &module, llvm::IRBuilder<> &builder) {
+      return nullptr;
+    }
+
+    friend class CodeGenerator;
   };
 
   class Expr : public ASTNode {};
@@ -44,6 +55,8 @@ namespace claire {
     [[nodiscard]] std::string to_string() const override {
       return "StringLiteral: " + name_;
     }
+
+    llvm::Value *codegen(llvm::Module &module, llvm::IRBuilder<> &builder) override;
   };
 
   class IdentifierExpr : public Expr {
@@ -89,6 +102,8 @@ namespace claire {
     [[nodiscard]] std::string to_string() const override {
       return "FunctionCall: " + callee_->to_string();
     }
+
+    llvm::Value *codegen(llvm::Module &module, llvm::IRBuilder<> &builder) override;
   };
 
 } // namespace claire
