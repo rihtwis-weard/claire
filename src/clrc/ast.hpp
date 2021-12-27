@@ -9,6 +9,7 @@
 #include <llvm/IR/Value.h>
 
 namespace claire {
+
   class ASTNode {
   protected:
     std::vector<std::unique_ptr<ASTNode>> children_;
@@ -54,6 +55,10 @@ namespace claire {
 
     [[nodiscard]] std::string to_string() const override {
       return "StringLiteral: " + name_;
+    }
+
+    [[nodiscard]] std::string name() const {
+      return name_.substr(1, name_.size() - 2);
     }
 
     llvm::Value *codegen(llvm::Module &module, llvm::IRBuilder<> &builder) override;
@@ -105,5 +110,10 @@ namespace claire {
 
     llvm::Value *codegen(llvm::Module &module, llvm::IRBuilder<> &builder) override;
   };
+
+  //  template <typename T, typename U>
+  //  concept ASTVisitor = requires(T t, U u) {
+  //    {t.visit(std::derived_from<ASTNode, U>)};
+  //  };
 
 } // namespace claire

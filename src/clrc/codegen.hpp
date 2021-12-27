@@ -70,6 +70,10 @@ namespace claire {
     }
 
   private:
+    llvm::Value *codegen(StringExpr *expr) {
+      return builder_.CreateGlobalStringPtr(expr->to_string());
+    }
+
     llvm::TargetMachine *set_target_triple() {
       std::string error{};
 
