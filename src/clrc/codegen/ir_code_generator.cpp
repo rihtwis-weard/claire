@@ -48,23 +48,6 @@ namespace claire::codegen {
     mod_.setSourceFileName(source_fname);
 
     hardcoded_ffi(mod_, builder_);
-
-    builder_.SetInsertPoint(make_entrypoint());
-  }
-
-  llvm::BasicBlock *IRCodeGenerator::make_entrypoint() {
-    auto *main_ft = llvm::FunctionType::get(builder_.getInt32Ty(), false);
-    auto *main =
-      llvm::Function::Create(main_ft, llvm::Function::ExternalLinkage, "main", mod_);
-    return llvm::BasicBlock::Create(ctx_, "entry", main);
-  }
-
-  void IRCodeGenerator::finish_program() {
-    constexpr auto int_size  = 32;
-    constexpr auto is_signed = true;
-
-    auto ret = llvm::APInt{int_size, 0, is_signed};
-    builder_.CreateRet(llvm::ConstantInt::get(ctx_, ret));
   }
 
   std::string IRCodeGenerator::dumps() const {
@@ -94,11 +77,22 @@ namespace claire::codegen {
   // Visitors
   //-----------------------------------------------------------------------------------------------
 
-  llvm::Value *IRCodeGenerator::operator()(ASTNode const *node) {
-    for (auto const &child : node->children()) {
+  llvm::Value *IRCodeGenerator::operator()(ProgramDecl const *prog) {
+    auto *main_ft = llvm::FunctionType::get(builder_.getInt32Ty(), false);
+    auto *main =
+      llvm::Function::Create(main_ft, llvm::Function::ExternalLinkage, "main", mod_);
+
+    builder_.SetInsertPoint(llvm::BasicBlock::Create(ctx_, "entry", main));
+
+    for (auto const &child : prog->children()) {
       std::visit(*this, child->as_variant());
     }
-    return nullptr;
+
+    constexpr auto int_size  = 32;
+    constexpr auto is_signed = true;
+
+    auto ret = llvm::APInt{int_size, 0, is_signed};
+    return builder_.CreateRet(llvm::ConstantInt::get(ctx_, ret));
   }
 
   // TODO(rihtwis-weard): error-handling

@@ -25,23 +25,19 @@ namespace claire::codegen {
 
     using ASTVisitor::operator();
 
-    llvm::BasicBlock *make_entrypoint();
-
-    void finish_program();
-
     std::string dumps() const;
 
     void emit_object_code();
 
-    llvm::Value *operator()(ASTNode const *node) override;
-    llvm::Value *operator()(StringExpr const *expr) override;
-    llvm::Value *operator()(FunctionCallExpr const *expr) override;
+    llvm::Value *operator()(ProgramDecl const *) override;
+    llvm::Value *operator()(StringExpr const *) override;
+    llvm::Value *operator()(FunctionCallExpr const *) override;
 
-    llvm::Value *operator()(IdentifierExpr const *expr) override {
+    llvm::Value *operator()(IdentifierExpr const *) override {
       return nullptr;
     }
 
-    llvm::Value *operator()(AccessExpr const *expr) override {
+    llvm::Value *operator()(AccessExpr const *) override {
       return nullptr;
     }
   };

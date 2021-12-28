@@ -25,7 +25,6 @@ int main(int argc, char const *argv[]) {
 
   std::visit(*code_generator, ast->as_variant());
 
-  code_generator->finish_program();
   std::cout << code_generator->dumps() << "\n";
   code_generator->emit_object_code();
   return EXIT_SUCCESS;
