@@ -10,11 +10,11 @@
 #include <llvm/Target/TargetMachine.h>
 #include <llvm/Target/TargetOptions.h>
 
-#include "../ast.hpp"
+#include "../parser/ast.hpp"
 
 namespace claire::codegen {
 
-  class IRCodeGenerator : public ASTVisitor {
+  class IRCodeGenerator : public parser::ASTVisitor {
     llvm::LLVMContext    ctx_;
     llvm::Module         mod_;
     llvm::IRBuilder<>    builder_;
@@ -29,15 +29,15 @@ namespace claire::codegen {
 
     void emit_object_code();
 
-    llvm::Value *operator()(ProgramDecl const *) override;
-    llvm::Value *operator()(StringExpr const *) override;
-    llvm::Value *operator()(FunctionCallExpr const *) override;
+    llvm::Value *operator()(parser::ProgramDecl const *) override;
+    llvm::Value *operator()(parser::StringExpr const *) override;
+    llvm::Value *operator()(parser::FunctionCallExpr const *) override;
 
-    llvm::Value *operator()(IdentifierExpr const *) override {
+    llvm::Value *operator()(parser::IdentifierExpr const *) override {
       return nullptr;
     }
 
-    llvm::Value *operator()(AccessExpr const *) override {
+    llvm::Value *operator()(parser::AccessExpr const *) override {
       return nullptr;
     }
   };

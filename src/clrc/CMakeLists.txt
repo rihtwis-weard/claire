@@ -13,12 +13,12 @@ target_compile_options(${TARGET}
 target_sources(${TARGET}
   PRIVATE
     exception.cpp
-    lexer.cpp
-    parser.cpp
-    state_machine.c
-    token.cpp
     codegen/ir_code_generator.cpp
     parser/ast.cpp
+    parser/parser.cpp
+    parser/lexer.cpp
+    parser/state_machine.c
+    parser/token.cpp
 )
 target_link_libraries(${TARGET}
   PUBLIC

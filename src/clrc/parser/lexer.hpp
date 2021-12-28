@@ -2,11 +2,11 @@
 
 #include <vector>
 
-#include "exception.hpp"
+#include "../exception.hpp"
 #include "state_machine.h"
 #include "token.h"
 
-namespace claire {
+namespace claire::parser {
 
   class Lexer {
     LexicalState       state_;
@@ -19,4 +19,4 @@ namespace claire {
     std::vector<Token> lex();
   };
 
-} // namespace claire
+} // namespace claire::parser

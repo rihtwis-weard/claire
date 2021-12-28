@@ -6,9 +6,10 @@
 
 #include <robin_hood.h>
 
-#include "utils.hpp"
+#include "../utils.hpp"
 
-namespace claire {
+namespace claire::parser {
+
   enum class TokenKind {
     // General Tokens
     eIdentifier,
@@ -101,7 +102,7 @@ namespace claire {
     return os << " | " << tok.repr << " |";
   }
 
-} // namespace claire
+} // namespace claire::parser
 
 #else
 

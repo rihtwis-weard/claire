@@ -2,7 +2,7 @@
 
 #include "parser.hpp"
 
-namespace claire {
+namespace claire::parser {
 
   auto Parser::next_state(ParseState prev, Token const &token) {
     return static_cast<ParseState>(
@@ -90,4 +90,4 @@ namespace claire {
     return node;
   }
 
-} // namespace claire
+} // namespace claire::parser

@@ -2,8 +2,8 @@
 #include "ApprovalTests.hpp"
 
 #include "codegen/ir_code_generator.hpp"
-#include "lexer.hpp"
-#include "parser.hpp"
+#include "parser/lexer.hpp"
+#include "parser/parser.hpp"
 
 int main() {
   using namespace boost::ut;
@@ -13,15 +13,14 @@ int main() {
 
   "hello_world"_test = []() {
     constexpr auto source_fname = "../../examples/hello_world.clr";
-    auto           lexemes      = claire::Lexer{source_fname}.lex();
-    auto           ast          = claire::Parser{}.parse(lexemes);
+    auto           lexemes      = claire::parser::Lexer{source_fname}.lex();
+    auto           ast          = claire::parser::Parser{}.parse(lexemes);
 
     std::unique_ptr<claire::codegen::IRCodeGenerator> code_generator =
       std::make_unique<claire::codegen::IRCodeGenerator>(source_fname);
 
     std::visit(*code_generator, ast->as_variant());
 
-    std::cout << code_generator->dumps() << "\n";
     code_generator->emit_object_code();
 
     Approvals::verify(

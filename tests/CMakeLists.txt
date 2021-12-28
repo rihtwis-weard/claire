@@ -13,13 +13,13 @@ function(add_claire_test TARGET ENTRY)
   )
   target_sources(${TEST_EXE}
     PRIVATE
-      ${CMAKE_SOURCE_DIR}/src/clrc/codegen/ir_code_generator.cpp
       ${CMAKE_SOURCE_DIR}/src/clrc/exception.cpp
-      ${CMAKE_SOURCE_DIR}/src/clrc/parser.cpp
-      ${CMAKE_SOURCE_DIR}/src/clrc/lexer.cpp
-      ${CMAKE_SOURCE_DIR}/src/clrc/state_machine.c
-      ${CMAKE_SOURCE_DIR}/src/clrc/token.cpp
+      ${CMAKE_SOURCE_DIR}/src/clrc/codegen/ir_code_generator.cpp
       ${CMAKE_SOURCE_DIR}/src/clrc/parser/ast.cpp
+      ${CMAKE_SOURCE_DIR}/src/clrc/parser/parser.cpp
+      ${CMAKE_SOURCE_DIR}/src/clrc/parser/lexer.cpp
+      ${CMAKE_SOURCE_DIR}/src/clrc/parser/state_machine.c
+      ${CMAKE_SOURCE_DIR}/src/clrc/parser/token.cpp
   )
   target_link_libraries(${TEST_EXE}
     PUBLIC
