@@ -3,12 +3,27 @@
 #include <iomanip>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Value.h>
 
+#include "visitor.hpp"
+
 namespace claire {
+
+  class ASTVisitor;
+
+  class ASTNode;
+  class AccessExpr;
+  class IdentifierExpr;
+  class StringExpr;
+  class FunctionCallExpr;
+
+  using ASTNodeVariant = std::variant<AccessExpr const *, ASTNode const *,
+    StringExpr const *, IdentifierExpr const *, FunctionCallExpr const *>;
+
   class ASTNode {
   protected:
     std::vector<std::unique_ptr<ASTNode>> children_;
@@ -35,11 +50,14 @@ namespace claire {
     }
 
     virtual ~ASTNode() = default;
-    virtual llvm::Value *codegen(llvm::Module &module, llvm::IRBuilder<> &builder) {
-      return nullptr;
+
+    [[nodiscard]] virtual std::vector<std::unique_ptr<ASTNode>> const &children() const {
+      return children_;
     }
 
-    friend class CodeGenerator;
+    virtual ASTNodeVariant as_variant() const {
+      return this;
+    }
   };
 
   class Expr : public ASTNode {};
@@ -56,7 +74,13 @@ namespace claire {
       return "StringLiteral: " + name_;
     }
 
-    llvm::Value *codegen(llvm::Module &module, llvm::IRBuilder<> &builder) override;
+    [[nodiscard]] std::string name() const {
+      return name_.substr(1, name_.size() - 2);
+    }
+
+    ASTNodeVariant as_variant() const override {
+      return this;
+    }
   };
 
   class IdentifierExpr : public Expr {
@@ -103,7 +127,13 @@ namespace claire {
       return "FunctionCall: " + callee_->to_string();
     }
 
-    llvm::Value *codegen(llvm::Module &module, llvm::IRBuilder<> &builder) override;
+    ASTNodeVariant as_variant() const override {
+      return this;
+    }
   };
+
+  class ASTVisitor
+    : public Visitor<llvm::Value *, ASTNode, StringExpr, IdentifierExpr, FunctionCallExpr,
+        AccessExpr> {};
 
 } // namespace claire

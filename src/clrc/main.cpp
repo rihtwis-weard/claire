@@ -1,8 +1,9 @@
 #include <iostream>
 
-#include "codegen.hpp"
 #include "lexer.hpp"
 #include "parser.hpp"
+
+#include "codegen/ir_code_generator.hpp"
 
 int main(int argc, char const *argv[]) {
   constexpr auto source_fname = "../../examples/hello_world.clr";
@@ -17,12 +18,15 @@ int main(int argc, char const *argv[]) {
     std::cout << "[" << i++ << "]: " << v << "\n";
   }
 
-  auto ast        = claire::Parser{}.parse(tokens);
-  auto ir_codegen = claire::CodeGenerator{source_fname};
-  ir_codegen.codegen(ast.get());
-  ir_codegen.fin();
-  std::cout << ir_codegen.dumps() << "\n";
+  auto ast = claire::Parser{}.parse(tokens);
 
-  ir_codegen.emit_object_code();
+  std::unique_ptr<claire::codegen::IRCodeGenerator> code_generator =
+    std::make_unique<claire::codegen::IRCodeGenerator>(source_fname);
+
+  std::visit(*code_generator, ast->as_variant());
+
+  code_generator->finish_program();
+  std::cout << code_generator->dumps() << "\n";
+  code_generator->emit_object_code();
   return EXIT_SUCCESS;
 }
