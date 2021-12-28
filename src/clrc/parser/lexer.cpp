@@ -1,6 +1,6 @@
 #include "lexer.hpp"
 
-namespace claire {
+namespace claire::parser {
 
   Lexer::Lexer(std::string const &fpath)
     : state_{LexicalState::eNextChar}
@@ -101,4 +101,4 @@ namespace claire {
     return tokens_;
   }
 
-} // namespace claire
+} // namespace claire::parser

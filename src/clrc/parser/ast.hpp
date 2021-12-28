@@ -9,9 +9,9 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Value.h>
 
-#include "visitor.hpp"
+#include "../visitor.hpp"
 
-namespace claire {
+namespace claire::parser {
 
   class ASTVisitor;
 
@@ -155,4 +155,4 @@ namespace claire {
     }
   };
 
-} // namespace claire
+} // namespace claire::parser

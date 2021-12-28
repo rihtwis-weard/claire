@@ -4,9 +4,9 @@
 
 #include <cstdint>
 
-#include "utils.hpp"
+#include "../utils.hpp"
 
-namespace claire {
+namespace claire::parser {
 
   enum class Glyph {
     eLayout,

@@ -1,7 +1,7 @@
 #define APPROVALS_UT
 #include "ApprovalTests.hpp"
 
-#include "lexer.hpp"
+#include "parser/lexer.hpp"
 
 int main() {
   using namespace boost::ut;
@@ -10,12 +10,12 @@ int main() {
   auto directory = Approvals::useApprovalsSubdirectory("golden_files");
 
   "hello_world"_test = []() {
-    auto lexemes = claire::Lexer{"../../examples/hello_world.clr"}.lex();
+    auto lexemes = claire::parser::Lexer{"../../examples/hello_world.clr"}.lex();
     Approvals::verifyAll("hello_world.clr", lexemes);
   };
 
   "fib"_test = []() {
-    auto lexemes = claire::Lexer{"../../examples/fib.clr"}.lex();
+    auto lexemes = claire::parser::Lexer{"../../examples/fib.clr"}.lex();
     Approvals::verifyAll("fib.clr", lexemes);
   };
 
@@ -25,7 +25,7 @@ int main() {
     };
 
     for (auto const &src : sources) {
-      auto lexer = claire::Lexer{"../../tests/data/" + src};
+      auto lexer = claire::parser::Lexer{"../../tests/data/" + src};
       expect(throws([&]() { lexer.lex(); }));
     }
   };

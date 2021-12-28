@@ -2,11 +2,11 @@
 
 #include <vector>
 
-#include "ast.hpp"
 #include "state_machine.h"
 #include "token.h"
+#include "ast.hpp"
 
-namespace claire {
+namespace claire::parser {
 
   class Parser {
   public:
@@ -24,4 +24,5 @@ namespace claire {
 
     auto next_state(ParseState prev, Token const &token);
   };
-} // namespace claire
+
+} // namespace claire::parser

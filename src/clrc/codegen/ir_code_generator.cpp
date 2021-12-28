@@ -77,7 +77,7 @@ namespace claire::codegen {
   // Visitors
   //-----------------------------------------------------------------------------------------------
 
-  llvm::Value *IRCodeGenerator::operator()(ProgramDecl const *prog) {
+  llvm::Value *IRCodeGenerator::operator()(parser::ProgramDecl const *prog) {
     auto *main_ft = llvm::FunctionType::get(builder_.getInt32Ty(), false);
     auto *main =
       llvm::Function::Create(main_ft, llvm::Function::ExternalLinkage, "main", mod_);
@@ -96,11 +96,11 @@ namespace claire::codegen {
   }
 
   // TODO(rihtwis-weard): error-handling
-  llvm::Value *IRCodeGenerator::operator()(StringExpr const *expr) {
+  llvm::Value *IRCodeGenerator::operator()(parser::StringExpr const *expr) {
     return builder_.CreateGlobalStringPtr(expr->name());
   }
 
-  llvm::Value *IRCodeGenerator::operator()(FunctionCallExpr const *expr) {
+  llvm::Value *IRCodeGenerator::operator()(parser::FunctionCallExpr const *expr) {
     auto callee = mod_.getFunction("puts");
     if (not callee) {
       std::cerr << "unknown function referenced!\n";
