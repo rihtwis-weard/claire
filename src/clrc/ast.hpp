@@ -16,11 +16,13 @@ namespace claire {
   class ASTVisitor;
 
   class ASTNode;
+  class AccessExpr;
+  class IdentifierExpr;
   class StringExpr;
   class FunctionCallExpr;
 
-  using ASTNodeVariant =
-    std::variant<ASTNode const *, StringExpr const *, FunctionCallExpr const *>;
+  using ASTNodeVariant = std::variant<AccessExpr const *, ASTNode const *,
+    StringExpr const *, IdentifierExpr const *, FunctionCallExpr const *>;
 
   class ASTNode {
   protected:
@@ -49,11 +51,13 @@ namespace claire {
 
     virtual ~ASTNode() = default;
 
+    [[nodiscard]] virtual std::vector<std::unique_ptr<ASTNode>> const &children() const {
+      return children_;
+    }
+
     virtual ASTNodeVariant as_variant() const {
       return this;
     }
-
-    virtual void traverse(ASTVisitor &v) const;
   };
 
   class Expr : public ASTNode {};
@@ -123,17 +127,13 @@ namespace claire {
       return "FunctionCall: " + callee_->to_string();
     }
 
-    [[nodiscard]] std::vector<std::unique_ptr<ASTNode>> const &children() const {
-      return children_;
-    }
-
     ASTNodeVariant as_variant() const override {
       return this;
     }
   };
 
   class ASTVisitor
-    : public Visitor<void, ASTNode, StringExpr, IdentifierExpr, FunctionCallExpr,
+    : public Visitor<llvm::Value *, ASTNode, StringExpr, IdentifierExpr, FunctionCallExpr,
         AccessExpr> {};
 
 } // namespace claire

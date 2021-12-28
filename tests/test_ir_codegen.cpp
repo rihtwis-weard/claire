@@ -18,7 +18,8 @@ int main() {
 
     std::unique_ptr<claire::codegen::IRCodeGenerator> code_generator =
       std::make_unique<claire::codegen::IRCodeGenerator>(source_fname);
-    ast->traverse(*code_generator);
+
+    std::visit(*code_generator, ast->as_variant());
 
     code_generator->finish_program();
     std::cout << code_generator->dumps() << "\n";

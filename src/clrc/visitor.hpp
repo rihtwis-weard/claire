@@ -8,7 +8,7 @@ namespace claire {
   template <typename R, typename T>
   class Visitor<R, T> {
   public:
-    virtual R operator()(T const *visitable){};
+    virtual R operator()(T const *visitable) = 0;
   };
 
   template <typename R, typename T, typename... Rest>
@@ -16,7 +16,7 @@ namespace claire {
   public:
     using Visitor<R, Rest...>::operator();
 
-    virtual R operator()(T const *visitable){};
+    virtual R operator()(T const *visitable) = 0;
   };
 
 } // namespace claire

@@ -33,8 +33,16 @@ namespace claire::codegen {
 
     void emit_object_code();
 
-    void operator()(StringExpr const *expr) override;
+    llvm::Value *operator()(ASTNode const *node) override;
+    llvm::Value *operator()(StringExpr const *expr) override;
+    llvm::Value *operator()(FunctionCallExpr const *expr) override;
 
-    void operator()(FunctionCallExpr const *expr) override;
+    llvm::Value *operator()(IdentifierExpr const *expr) override {
+      return nullptr;
+    }
+
+    llvm::Value *operator()(AccessExpr const *expr) override {
+      return nullptr;
+    }
   };
 } // namespace claire::codegen

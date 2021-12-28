@@ -93,28 +93,37 @@ namespace claire::codegen {
   //-----------------------------------------------------------------------------------------------
   // Visitors
   //-----------------------------------------------------------------------------------------------
-  // TODO(rihtwis-weard): error-handling
-  void IRCodeGenerator::operator()(StringExpr const *expr) {
-    if (auto val = builder_.CreateGlobalStringPtr(expr->name()); not val) {
-      std::cerr << "failed to create constant string\n";
+
+  llvm::Value *IRCodeGenerator::operator()(ASTNode const *node) {
+    for (auto const &child : node->children()) {
+      std::visit(*this, child->as_variant());
     }
+    return nullptr;
   }
 
-  void IRCodeGenerator::operator()(FunctionCallExpr const *expr) {
+  // TODO(rihtwis-weard): error-handling
+  llvm::Value *IRCodeGenerator::operator()(StringExpr const *expr) {
+    return builder_.CreateGlobalStringPtr(expr->name());
+  }
+
+  llvm::Value *IRCodeGenerator::operator()(FunctionCallExpr const *expr) {
     auto callee = mod_.getFunction("puts");
     if (not callee) {
       std::cerr << "unknown function referenced!\n";
-      return;
+      return nullptr;
     }
 
     std::vector<llvm::Value *> args;
     for (auto const &child : expr->children()) {
-      args.push_back(child->codegen(mod_, builder_));
+      if (auto arg = std::visit(*this, child->as_variant()); arg) {
+        args.push_back(arg);
+      } else {
+        std::cerr << "failed to create function arg!\n";
+        return nullptr;
+      }
     }
 
-    if (auto val = builder_.CreateCall(callee, args, "calltmp"); not val) {
-      std::cerr << "failed to create function call\n";
-    }
+    return builder_.CreateCall(callee, args, "calltmp");
   }
 
 } // namespace claire::codegen
