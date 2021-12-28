@@ -1,4 +1,4 @@
-└──ASTNode: root
+└──ProgramDecl
 	└──FunctionCall: AccessExpression: IO.puts
 		└──StringLiteral: "Hello world!"
 

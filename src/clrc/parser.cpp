@@ -10,7 +10,7 @@ namespace claire {
   }
 
   std::unique_ptr<ASTNode> Parser::parse(std::vector<Token> const &tokens) {
-    auto root  = std::make_unique<ASTNode>();
+    auto root  = std::make_unique<ProgramDecl>();
     auto state = ParseState::eNewScope;
 
     //      IO.puts("Hello world!")

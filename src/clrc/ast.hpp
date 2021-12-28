@@ -16,13 +16,15 @@ namespace claire {
   class ASTVisitor;
 
   class ASTNode;
+  class ProgramDecl;
   class AccessExpr;
   class IdentifierExpr;
   class StringExpr;
   class FunctionCallExpr;
 
-  using ASTNodeVariant = std::variant<AccessExpr const *, ASTNode const *,
-    StringExpr const *, IdentifierExpr const *, FunctionCallExpr const *>;
+  using ASTNodeVariant =
+    std::variant<AccessExpr const *, ASTNode const *, StringExpr const *,
+      IdentifierExpr const *, FunctionCallExpr const *, ProgramDecl const *>;
 
   class ASTNode {
   protected:
@@ -55,7 +57,18 @@ namespace claire {
       return children_;
     }
 
-    virtual ASTNodeVariant as_variant() const {
+    [[nodiscard]] virtual ASTNodeVariant as_variant() const {
+      return this;
+    }
+  };
+
+  class ProgramDecl : public ASTNode {
+  public:
+    [[nodiscard]] std::string to_string() const override {
+      return "ProgramDecl";
+    }
+
+    [[nodiscard]] ASTNodeVariant as_variant() const override {
       return this;
     }
   };
@@ -78,7 +91,7 @@ namespace claire {
       return name_.substr(1, name_.size() - 2);
     }
 
-    ASTNodeVariant as_variant() const override {
+    [[nodiscard]] ASTNodeVariant as_variant() const override {
       return this;
     }
   };
@@ -127,13 +140,19 @@ namespace claire {
       return "FunctionCall: " + callee_->to_string();
     }
 
-    ASTNodeVariant as_variant() const override {
+    [[nodiscard]] ASTNodeVariant as_variant() const override {
       return this;
     }
   };
 
   class ASTVisitor
-    : public Visitor<llvm::Value *, ASTNode, StringExpr, IdentifierExpr, FunctionCallExpr,
-        AccessExpr> {};
+    : public Visitor<llvm::Value *, ASTNode, ProgramDecl, StringExpr, IdentifierExpr,
+        FunctionCallExpr, AccessExpr> {
+
+  public:
+    llvm::Value *operator()(ASTNode const *) override {
+      return nullptr;
+    }
+  };
 
 } // namespace claire
