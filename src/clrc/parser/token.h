@@ -27,6 +27,7 @@ namespace claire::parser {
     eReservedLet,
     eReservedIf,
     eReservedElse,
+    eReservedOpen,
     eCount,
   };
 
@@ -94,6 +95,7 @@ namespace claire::parser {
       TOKEN_DESC(TokenKind::eReservedLet, "Keyword");
       TOKEN_DESC(TokenKind::eReservedIf, "Keyword");
       TOKEN_DESC(TokenKind::eReservedElse, "Keyword");
+      TOKEN_DESC(TokenKind::eReservedOpen, "Keyword");
     default:
       os << "Unknown";
       break;
@@ -118,6 +120,7 @@ typedef enum {
   eTokenKindReservedLet,
   eTokenKindReservedIf,
   eTokenKindReservedElse,
+  eTokenKindReservedOpen,
   eTokenKindCount,
 } TokenKind;
 

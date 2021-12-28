@@ -1,15 +1,22 @@
 #pragma once
 
+#include <utility>
 #include <vector>
 
+#include "ast.hpp"
 #include "state_machine.h"
 #include "token.h"
-#include "ast.hpp"
 
 namespace claire::parser {
 
   class Parser {
+    std::string stdlib_path_;
+
   public:
+    explicit Parser(std::string stdlib_path)
+      : stdlib_path_{std::move(stdlib_path)} {
+    }
+
     std::unique_ptr<ASTNode> parse(std::vector<Token> const &tokens);
 
   private:

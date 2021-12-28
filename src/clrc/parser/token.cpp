@@ -11,5 +11,6 @@ namespace claire::parser {
     {"let", TokenKind::eReservedLet},
     {"if", TokenKind::eReservedIf},
     {"else", TokenKind::eReservedElse},
+    {"open", TokenKind::eReservedOpen},
   };
 }

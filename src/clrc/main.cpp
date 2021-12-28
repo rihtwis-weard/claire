@@ -17,7 +17,9 @@ int main(int argc, char const *argv[]) {
     std::cout << "[" << i++ << "]: " << v << "\n";
   }
 
-  auto ast = claire::parser::Parser{}.parse(tokens);
+  constexpr auto stdlib_path = "../../src/stdlib/";
+
+  auto ast = claire::parser::Parser{stdlib_path}.parse(tokens);
 
   std::unique_ptr<claire::codegen::IRCodeGenerator> code_generator =
     std::make_unique<claire::codegen::IRCodeGenerator>(source_fname);
