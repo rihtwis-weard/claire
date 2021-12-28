@@ -13,6 +13,7 @@ namespace claire::parser {
     auto root  = std::make_unique<ProgramDecl>();
     auto state = ParseState::eNewScope;
 
+    //      open IO
     //      IO.puts("Hello world!")
     for (auto tok = tokens.begin(); tok != tokens.end(); tok++) {
 
