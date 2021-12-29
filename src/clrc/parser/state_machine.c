@@ -84,6 +84,8 @@ int const ch_reeval[256] = {
 #define reduce(prev_state, transition, next_state)                                       \
   [state(prev_state) + offset(transition)] = state(next_state)
 
+// TODO(rihtwis-weard): need to start treating NewLine/LineFeeds as tokens for breaking up expressions?
+
 // Lexical analysis state transitions
 uint8_t const lex_trans[offset(Count)] = {
   initiating_states(NextChar),
@@ -160,6 +162,8 @@ uint8_t const lex_inside[offset(Count)] = {
 
 #undef initiating_states
 
+// TODO(rihtwis-weard): can be simplified using a localized/scope-based transition table
+//                      since not all states are connected
 uint8_t const parse_trans[offset(Count)] = {
   reduce(NewScope, Identifier, IdentifierExpr),
   reduce(NewScope, ReservedOpen, ModuleOpenStmt),
@@ -182,11 +186,19 @@ uint8_t const parse_trans[offset(Count)] = {
   reduce(GrowAccessExpr, Identifier, Error),
   reduce(GrowAccessExpr, LParens, FunctionCallExpr),
 
-  reduce(FunctionCallExpr, StringLiteral, FunctionArgs),
+  reduce(FunctionCallExpr, StringLiteral, FunctionCallArgs),
 
   reduce(ModuleOpenStmt, Identifier, IdentifierExpr),
 
   reduce(ModuleDecl, Identifier, NewScope),
+
+  reduce(FunctionDeclArgs, Arrow, FunctionDeclReturnType),
+
+  reduce(ExternDecl, Identifier, ExternDeclName),
+  reduce(ExternDecl, Operator,
+    ExternDecl), // TODO(rihtwis-weard): more specifically, assignment operator
+  reduce(ExternDecl, StringLiteral, ExternDeclLinkageName),
+  reduce(ExternDeclName, Separator, FunctionDeclArgs),
 };
 
 #pragma GCC diagnostic pop

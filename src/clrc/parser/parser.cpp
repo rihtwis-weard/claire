@@ -31,6 +31,11 @@ namespace claire::parser {
       case ParseState::eModuleOpenStmt: {
         // TODO(rihtwis-weard): elide `open ModuleName` declaration for stdlib modules
         root->add(parse_module_open_stmt(state, tok));
+        state = ParseState::eNewScope;
+        break;
+      }
+      case ParseState::eExternDecl: {
+        root->add(parse_extern_decl(state, tok));
         break;
       }
       default:
@@ -96,7 +101,8 @@ namespace claire::parser {
         return node;
       }
 
-      if (state == ParseState::eFunctionArgs) {
+      // TODO(rihwis-weard): don't hardcode type / values
+      if (state == ParseState::eFunctionCallArgs) {
         node->add(std::make_unique<StringExpr>(tok->repr));
       }
     }
@@ -105,7 +111,7 @@ namespace claire::parser {
   }
 
   std::unique_ptr<ASTNode> Parser::parse_module_open_stmt(
-    ParseState &state, std::vector<Token>::const_iterator tok) {
+    ParseState &state, std::vector<Token>::const_iterator &tok) {
 
     auto module_root = std::make_unique<ASTNode>();
 
@@ -133,6 +139,57 @@ namespace claire::parser {
     }
 
     return module_root;
+  }
+
+  std::unique_ptr<ExternDecl> Parser::parse_extern_decl(
+    ParseState &state, std::vector<Token>::const_iterator tok) {
+
+    std::string              name{};
+    std::vector<FunctionArg> args{};
+    std::string              return_type{};
+    std::string              linkage_name{};
+
+    for (; state > ParseState::eFinal;) {
+      if (state = next_state(state, *(++tok)); state <= ParseState::eFinal) {
+        return std::make_unique<ExternDecl>(
+          name, std::move(args), return_type, linkage_name);
+      }
+
+      if (state == ParseState::eExternDeclName) {
+        name = tok->repr;
+      } else if (state == ParseState::eFunctionDeclArgs) {
+        args = parse_function_decl_args(tok);
+        --tok;
+      } else if (state == ParseState::eFunctionDeclReturnType) {
+        tok++;
+        return_type = tok->repr;
+        state       = ParseState::eExternDecl;
+      } else if (state == ParseState::eExternDeclLinkageName) {
+        linkage_name = tok->repr;
+      }
+    }
+
+    // TODO(rihtwis-weard): need to record errors
+    return nullptr;
+  }
+
+  std::vector<FunctionArg> Parser::parse_function_decl_args(
+    std::vector<Token>::const_iterator &tok) {
+
+    auto args = std::vector<FunctionArg>{};
+
+    FunctionArg curr_arg{};
+
+    // TODO(rihtwis-weard): local state machine for stricter checking and cleaner transitions
+    while ((++tok)->kind != TokenKind::eArrow) {
+      if (tok->kind == TokenKind::eIdentifier) {
+        curr_arg.name = tok->repr;
+      } else if (tok->kind != TokenKind::eSeparator) {
+        curr_arg.type = tok->repr;
+        args.push_back(curr_arg);
+      }
+    }
+    return args;
   }
 
 } // namespace claire::parser

@@ -80,6 +80,8 @@ namespace claire::parser {
   };
 
   class ModuleDecl : public Decl {
+
+    // TODO(rihtwis-weard): store module name
   public:
     [[nodiscard]] std::string to_string() const override {
       return "ModuleDecl";
@@ -90,12 +92,28 @@ namespace claire::parser {
     }
   };
 
+  struct FunctionArg {
+    std::string name;
+    std::string type;
+  };
+
   class ExternDecl : public Decl {
+    std::string              name_;
+    std::vector<FunctionArg> args_;
+    std::string              return_type_;
+    std::string              linkage_name_;
+
   public:
-    // TODO: needs FunctionArgExprs, method name, and linkage name
+    ExternDecl(std::string name, std::vector<FunctionArg> &&args, std::string return_type,
+      std::string linkage_name)
+      : name_{std::move(name)}
+      , args_{std::move(args)}
+      , return_type_{std::move(return_type)}
+      , linkage_name_{std::move(linkage_name)} {
+    }
 
     [[nodiscard]] std::string to_string() const override {
-      return "ExternDecl";
+      return "ExternDecl: " + name_;
     }
 
     [[nodiscard]] ASTNodeVariant as_variant() const override {
