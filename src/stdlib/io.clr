@@ -1,0 +1,3 @@
+module IO
+
+export extern puts \s: binary -> u32 = "puts"

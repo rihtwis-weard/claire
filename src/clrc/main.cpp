@@ -14,10 +14,12 @@ int main(int argc, char const *argv[]) {
 
   std::size_t i{};
   for (auto v : claire::parser::parse_trans) {
-    std::cout << "[" << i++ << "]: " << v << "\n";
+    std::cout << "[" << i++ << "]: " << static_cast<int>(v) << "\n";
   }
 
-  auto ast = claire::parser::Parser{}.parse(tokens);
+  constexpr auto stdlib_path = "../../src/stdlib/";
+
+  auto ast = claire::parser::Parser{stdlib_path}.parse(tokens);
 
   std::unique_ptr<claire::codegen::IRCodeGenerator> code_generator =
     std::make_unique<claire::codegen::IRCodeGenerator>(source_fname);

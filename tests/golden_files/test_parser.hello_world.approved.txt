@@ -1,4 +1,6 @@
 └──ProgramDecl
+	└──ModuleDecl
+		└──ExternDecl: puts
 	└──FunctionCall: AccessExpression: IO.puts
 		└──StringLiteral: "Hello world!"
 

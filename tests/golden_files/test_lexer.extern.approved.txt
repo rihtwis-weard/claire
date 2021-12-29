@@ -1,0 +1,17 @@
+io.clr
+
+
+[0] =      Keyword | module |
+[1] =   Identifier | IO |
+[2] =      Keyword | export |
+[3] =      Keyword | extern |
+[4] =   Identifier | puts |
+[5] =    Separator | \ |
+[6] =   Identifier | s |
+[7] =    Separator | : |
+[8] =         Type | binary |
+[9] =     Operator | -> |
+[10] =         Type | u32 |
+[11] =     Operator | = |
+[12] =       String | "puts" |
+

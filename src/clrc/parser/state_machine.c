@@ -23,7 +23,7 @@ uint16_t const ch_to_eqc[256] = {
   ['(']        = offset(Operator),
   [')']        = offset(Operator),
   ['+']        = offset(Operator),
-  ['-']        = offset(Operator),
+  ['-']        = offset(Hyphen),
   ['.']        = offset(Operator),
   [':']        = offset(Separator),
   ['<']        = offset(Operator),
@@ -76,12 +76,15 @@ int const ch_reeval[256] = {
   [state(s) + offset(Digit)]       = state(Numeral),           \
   [state(s) + offset(Separator)]   = state(Separator),         \
   [state(s) + offset(Operator)]    = state(OperatorSingle),    \
+  [state(s) + offset(Hyphen)]      = state(OperatorMulti),     \
   [state(s) + offset(VerticalBar)] = state(OperatorMulti),     \
   [state(s) + offset(DoubleQuote)] = state(String)
 // clang-format on
 
 #define reduce(prev_state, transition, next_state)                                       \
   [state(prev_state) + offset(transition)] = state(next_state)
+
+// TODO(rihtwis-weard): need to start treating NewLine/LineFeeds as tokens for breaking up expressions?
 
 // Lexical analysis state transitions
 uint8_t const lex_trans[offset(Count)] = {
@@ -101,6 +104,7 @@ uint8_t const lex_trans[offset(Count)] = {
   reduce(Identifier, Digit, Identifier),
   reduce(Identifier, Separator, IdentifierEnd),
   reduce(Identifier, Operator, IdentifierEnd),
+  reduce(Identifier, Hyphen, IdentifierEnd),
   reduce(Identifier, VerticalBar, IdentifierEnd),
   reduce(Identifier, DoubleQuote, IdentifierEnd),
 
@@ -111,31 +115,33 @@ uint8_t const lex_trans[offset(Count)] = {
   reduce(String, Digit, String),
   reduce(String, Separator, String),
   reduce(String, Operator, String),
+  reduce(String, Hyphen, String),
   reduce(String, VerticalBar, String),
   reduce(String, DoubleQuote, StringEnd),
   reduce(String, EOF, EOF),
 
-  [state(Numeral) + offset(Layout)]      = state(NumeralEnd),
-  [state(Numeral) + offset(Space)]       = state(NumeralEnd),
-  [state(Numeral) + offset(LineFeed)]    = state(NumeralEnd),
-  [state(Numeral) + offset(Letter)]      = state(NumeralEnd),
-  [state(Numeral) + offset(Digit)]       = state(Numeral),
-  [state(Numeral) + offset(Separator)]   = state(NumeralEnd),
-  [state(Numeral) + offset(Operator)]    = state(NumeralEnd),
-  [state(Numeral) + offset(VerticalBar)] = state(NumeralEnd),
-  [state(Numeral) + offset(DoubleQuote)] = state(NumeralEnd),
-  [state(Numeral) + offset(EOF)]         = state(EOF),
+  reduce(Numeral, Layout, NumeralEnd),
+  reduce(Numeral, Space, NumeralEnd),
+  reduce(Numeral, LineFeed, NumeralEnd),
+  reduce(Numeral, Letter, NumeralEnd),
+  reduce(Numeral, Digit, Numeral),
+  reduce(Numeral, Separator, NumeralEnd),
+  reduce(Numeral, Operator, NumeralEnd),
+  reduce(Numeral, Hyphen, NumeralEnd),
+  reduce(Numeral, VerticalBar, NumeralEnd),
+  reduce(Numeral, DoubleQuote, EOF),
 
-  [state(OperatorMulti) + offset(Layout)]      = state(OperatorMultiEnd),
-  [state(OperatorMulti) + offset(Space)]       = state(OperatorMultiEnd),
-  [state(OperatorMulti) + offset(LineFeed)]    = state(OperatorMultiEnd),
-  [state(OperatorMulti) + offset(Letter)]      = state(OperatorMultiEnd),
-  [state(OperatorMulti) + offset(Digit)]       = state(OperatorMultiEnd),
-  [state(OperatorMulti) + offset(Separator)]   = state(OperatorMultiEnd),
-  [state(OperatorMulti) + offset(Operator)]    = state(OperatorMulti),
-  [state(OperatorMulti) + offset(VerticalBar)] = state(Error),
-  [state(OperatorMulti) + offset(DoubleQuote)] = state(OperatorMultiEnd),
-  [state(OperatorMulti) + offset(EOF)]         = state(EOF),
+  reduce(OperatorMulti, Layout, OperatorMultiEnd),
+  reduce(OperatorMulti, Space, OperatorMultiEnd),
+  reduce(OperatorMulti, LineFeed, OperatorMultiEnd),
+  reduce(OperatorMulti, Letter, OperatorMultiEnd),
+  reduce(OperatorMulti, Digit, OperatorMultiEnd),
+  reduce(OperatorMulti, Separator, OperatorMultiEnd),
+  reduce(OperatorMulti, Operator, OperatorMulti),
+  reduce(OperatorMulti, Hyphen, Error),
+  reduce(OperatorMulti, VerticalBar, Error),
+  reduce(OperatorMulti, DoubleQuote, OperatorMultiEnd),
+  reduce(OperatorMulti, EOF, EOF),
 };
 
 // True if inside of an identifier, value, or special multi-character operator
@@ -156,8 +162,15 @@ uint8_t const lex_inside[offset(Count)] = {
 
 #undef initiating_states
 
+// TODO(rihtwis-weard): can be simplified using a localized/scope-based transition table
+//                      since not all states are connected
 uint8_t const parse_trans[offset(Count)] = {
   reduce(NewScope, Identifier, IdentifierExpr),
+  reduce(NewScope, ReservedOpen, ModuleOpenStmt),
+  reduce(NewScope, ReservedModule, ModuleDecl),
+  // TODO(rihtwis-weard): eventually enforce export visibility
+  reduce(NewScope, ReservedExport, NewScope),
+  reduce(NewScope, ReservedExtern, ExternDecl),
 
   reduce(IdentifierExpr, Access, NewAccessExpr),
 
@@ -173,7 +186,19 @@ uint8_t const parse_trans[offset(Count)] = {
   reduce(GrowAccessExpr, Identifier, Error),
   reduce(GrowAccessExpr, LParens, FunctionCallExpr),
 
-  reduce(FunctionCallExpr, StringLiteral, FunctionArgs),
+  reduce(FunctionCallExpr, StringLiteral, FunctionCallArgs),
+
+  reduce(ModuleOpenStmt, Identifier, IdentifierExpr),
+
+  reduce(ModuleDecl, Identifier, NewScope),
+
+  reduce(FunctionDeclArgs, Arrow, FunctionDeclReturnType),
+
+  reduce(ExternDecl, Identifier, ExternDeclName),
+  reduce(ExternDecl, Operator,
+    ExternDecl), // TODO(rihtwis-weard): more specifically, assignment operator
+  reduce(ExternDecl, StringLiteral, ExternDeclLinkageName),
+  reduce(ExternDeclName, Separator, FunctionDeclArgs),
 };
 
 #pragma GCC diagnostic pop

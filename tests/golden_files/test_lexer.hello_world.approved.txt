@@ -1,10 +1,12 @@
 hello_world.clr
 
 
-[0] =   Identifier | IO |
-[1] =     Operator | . |
-[2] =   Identifier | puts |
-[3] =     Operator | ( |
-[4] =       String | "Hello world!" |
-[5] =     Operator | ) |
+[0] =      Keyword | open |
+[1] =   Identifier | IO |
+[2] =   Identifier | IO |
+[3] =     Operator | . |
+[4] =   Identifier | puts |
+[5] =     Operator | ( |
+[6] =       String | "Hello world!" |
+[7] =     Operator | ) |
 

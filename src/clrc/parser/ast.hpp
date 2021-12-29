@@ -21,10 +21,14 @@ namespace claire::parser {
   class IdentifierExpr;
   class StringExpr;
   class FunctionCallExpr;
+  class ModuleDecl;
+  class ExternDecl;
 
-  using ASTNodeVariant =
-    std::variant<AccessExpr const *, ASTNode const *, StringExpr const *,
-      IdentifierExpr const *, FunctionCallExpr const *, ProgramDecl const *>;
+  // TODO(rihwis-weard): can use custom visitor pattern instead of `std::visit` and `std::variant`
+  //                     and use virtual dispatch
+  using ASTNodeVariant = std::variant<AccessExpr const *, ASTNode const *,
+    StringExpr const *, IdentifierExpr const *, FunctionCallExpr const *,
+    ProgramDecl const *, ModuleDecl const *, ExternDecl const *>;
 
   class ASTNode {
   protected:
@@ -62,7 +66,9 @@ namespace claire::parser {
     }
   };
 
-  class ProgramDecl : public ASTNode {
+  class Decl : public ASTNode {};
+
+  class ProgramDecl : public Decl {
   public:
     [[nodiscard]] std::string to_string() const override {
       return "ProgramDecl";
@@ -71,6 +77,24 @@ namespace claire::parser {
     [[nodiscard]] ASTNodeVariant as_variant() const override {
       return this;
     }
+  };
+
+  class ModuleDecl : public Decl {
+
+    // TODO(rihtwis-weard): store module name
+  public:
+    [[nodiscard]] std::string to_string() const override {
+      return "ModuleDecl";
+    }
+
+    [[nodiscard]] ASTNodeVariant as_variant() const override {
+      return this;
+    }
+  };
+
+  struct FunctionArg {
+    std::string name;
+    std::string type;
   };
 
   class Expr : public ASTNode {};
@@ -93,6 +117,42 @@ namespace claire::parser {
 
     [[nodiscard]] ASTNodeVariant as_variant() const override {
       return this;
+    }
+  };
+
+  class ExternDecl : public Decl {
+    std::string                 name_;
+    std::vector<FunctionArg>    args_;
+    std::string                 return_type_;
+    std::unique_ptr<StringExpr> linkage_name_;
+
+  public:
+    ExternDecl(std::string name, std::vector<FunctionArg> &&args, std::string return_type,
+      std::unique_ptr<StringExpr> &&linkage_name)
+      : name_{std::move(name)}
+      , args_{std::move(args)}
+      , return_type_{std::move(return_type)}
+      , linkage_name_{std::move(linkage_name)} {
+    }
+
+    [[nodiscard]] std::string to_string() const override {
+      return "ExternDecl: " + name_;
+    }
+
+    [[nodiscard]] ASTNodeVariant as_variant() const override {
+      return this;
+    }
+
+    [[nodiscard]] std::vector<FunctionArg> const &args() const {
+      return args_;
+    }
+
+    [[nodiscard]] std::string return_type() const {
+      return return_type_;
+    }
+
+    [[nodiscard]] std::string linkage_name() const {
+      return linkage_name_->name();
     }
   };
 
@@ -147,7 +207,7 @@ namespace claire::parser {
 
   class ASTVisitor
     : public Visitor<llvm::Value *, ASTNode, ProgramDecl, StringExpr, IdentifierExpr,
-        FunctionCallExpr, AccessExpr> {
+        FunctionCallExpr, AccessExpr, ModuleDecl, ExternDecl> {
 
   public:
     llvm::Value *operator()(ASTNode const *) override {

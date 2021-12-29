@@ -33,21 +33,12 @@ namespace claire::codegen {
     return target_machine;
   }
 
-  // TODO(rihtwis-weard): need to move to standard library module + AST instead of hard-coding
-  void hardcoded_ffi(llvm::Module &mod, llvm::IRBuilder<> &builder) {
-    // int puts(char const *s);
-    mod.getOrInsertFunction("puts",
-      llvm::FunctionType::get(builder.getInt32Ty(), builder.getInt8PtrTy(), false));
-  }
-
   IRCodeGenerator::IRCodeGenerator(std::string const &source_fname)
     : ctx_{}
     , mod_{"claire", ctx_}
     , builder_{ctx_}
     , machine_{set_target_machine(mod_)} {
     mod_.setSourceFileName(source_fname);
-
-    hardcoded_ffi(mod_, builder_);
   }
 
   std::string IRCodeGenerator::dumps() const {
@@ -95,12 +86,43 @@ namespace claire::codegen {
     return builder_.CreateRet(llvm::ConstantInt::get(ctx_, ret));
   }
 
+  llvm::Value *IRCodeGenerator::operator()(parser::ModuleDecl const *decl) {
+    for (auto const &child : decl->children()) {
+      std::visit(*this, child->as_variant());
+    }
+    return nullptr;
+  }
+
+  llvm::Value *IRCodeGenerator::operator()(parser::ExternDecl const *decl) {
+    auto result = builder_.getVoidTy();
+    if (decl->return_type() == "u32") {
+      result = builder_.getInt32Ty();
+    }
+
+    std::vector<llvm::Type *> params{};
+
+    for (auto const &arg : decl->args()) {
+      if (arg.type == "binary") {
+        params.push_back(builder_.getInt8PtrTy());
+      } else {
+        // TODO(rihtwis-weard): error handling because args don't matchup
+      }
+    }
+
+    mod_.getOrInsertFunction(
+      decl->linkage_name(), llvm::FunctionType::get(result, params, false));
+    return nullptr;
+  }
+
   // TODO(rihtwis-weard): error-handling
   llvm::Value *IRCodeGenerator::operator()(parser::StringExpr const *expr) {
     return builder_.CreateGlobalStringPtr(expr->name());
   }
 
   llvm::Value *IRCodeGenerator::operator()(parser::FunctionCallExpr const *expr) {
+    // TODO(rihtwis-weard): cleanup module function access
+    //                      also, can/should separate modules be compiled as separate object files?
+    //                      or always/conditionally be inlined as AST?
     auto callee = mod_.getFunction("puts");
     if (not callee) {
       std::cerr << "unknown function referenced!\n";

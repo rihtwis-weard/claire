@@ -30,6 +30,8 @@ namespace claire::codegen {
     void emit_object_code();
 
     llvm::Value *operator()(parser::ProgramDecl const *) override;
+    llvm::Value *operator()(parser::ModuleDecl const *) override;
+    llvm::Value *operator()(parser::ExternDecl const *) override;
     llvm::Value *operator()(parser::StringExpr const *) override;
     llvm::Value *operator()(parser::FunctionCallExpr const *) override;
 
