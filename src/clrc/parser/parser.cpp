@@ -13,6 +13,7 @@ namespace claire::parser {
   template <typename ASTNodeType>
   std::unique_ptr<ASTNode> Parser::parse(std::vector<Token> const &tokens) {
     auto root  = std::make_unique<ASTNodeType>();
+    // TODO(rihtwis-weard): `NewScope` synonymous with an additional `Program` state?
     auto state = ParseState::eNewScope;
 
     //      open IO
@@ -27,9 +28,9 @@ namespace claire::parser {
         root->add(parse_identifier_expr(state, tok));
         break;
       }
-      case ParseState::eOpenModuleDecl: {
+      case ParseState::eModuleOpenStmt: {
         // TODO(rihtwis-weard): elide `open ModuleName` declaration for stdlib modules
-        root->add(parse_open_module_decl(state, tok));
+        root->add(parse_module_open_stmt(state, tok));
         break;
       }
       default:
@@ -103,7 +104,7 @@ namespace claire::parser {
     return node;
   }
 
-  std::unique_ptr<ASTNode> Parser::parse_open_module_decl(
+  std::unique_ptr<ASTNode> Parser::parse_module_open_stmt(
     ParseState &state, std::vector<Token>::const_iterator tok) {
 
     auto module_root = std::make_unique<ASTNode>();
@@ -119,6 +120,8 @@ namespace claire::parser {
         //        if (auto mod = mod_map_.find(tok->repr); mod != mod_map_.end()) {
         //          return std::unique_ptr<ASTNode>{mod->second.get()};
         //        }
+
+        // TODO(rihtwis-weard): return `OpenModuleStmt` if `Module` is already loaded
 
         // TODO(rihwis-weard): don't hard-code module lookup/resolution
         // distribute module registry, file -> module names

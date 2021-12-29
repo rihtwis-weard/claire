@@ -22,10 +22,13 @@ namespace claire::parser {
   class StringExpr;
   class FunctionCallExpr;
   class ModuleDecl;
+  class ExternDecl;
 
+  // TODO(rihwis-weard): can use custom visitor pattern instead of `std::visit` and `std::variant`
+  //                     and use virtual dispatch
   using ASTNodeVariant = std::variant<AccessExpr const *, ASTNode const *,
     StringExpr const *, IdentifierExpr const *, FunctionCallExpr const *,
-    ProgramDecl const *, ModuleDecl const *>;
+    ProgramDecl const *, ModuleDecl const *, ExternDecl const *>;
 
   class ASTNode {
   protected:
@@ -63,7 +66,9 @@ namespace claire::parser {
     }
   };
 
-  class ProgramDecl : public ASTNode {
+  class Decl : public ASTNode {};
+
+  class ProgramDecl : public Decl {
   public:
     [[nodiscard]] std::string to_string() const override {
       return "ProgramDecl";
@@ -74,10 +79,23 @@ namespace claire::parser {
     }
   };
 
-  class ModuleDecl : public ASTNode {
+  class ModuleDecl : public Decl {
   public:
     [[nodiscard]] std::string to_string() const override {
       return "ModuleDecl";
+    }
+
+    [[nodiscard]] ASTNodeVariant as_variant() const override {
+      return this;
+    }
+  };
+
+  class ExternDecl : public Decl {
+  public:
+    // TODO: needs FunctionArgExprs, method name, and linkage name
+
+    [[nodiscard]] std::string to_string() const override {
+      return "ExternDecl";
     }
 
     [[nodiscard]] ASTNodeVariant as_variant() const override {
@@ -159,7 +177,7 @@ namespace claire::parser {
 
   class ASTVisitor
     : public Visitor<llvm::Value *, ASTNode, ProgramDecl, StringExpr, IdentifierExpr,
-        FunctionCallExpr, AccessExpr, ModuleDecl> {
+        FunctionCallExpr, AccessExpr, ModuleDecl, ExternDecl> {
 
   public:
     llvm::Value *operator()(ASTNode const *) override {

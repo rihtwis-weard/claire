@@ -21,6 +21,9 @@ namespace claire::parser {
     // Special Operators
     eAccess,
     eLParens,
+    eMinus,
+    // Multi
+    eArrow,
     ePipe,
 
     // Reserved Keywords
@@ -28,6 +31,14 @@ namespace claire::parser {
     eReservedIf,
     eReservedElse,
     eReservedOpen,
+    eReservedModule,
+    eReservedExport,
+    eReservedExtern,
+
+    // Builtin Types
+    eTypeBinary,
+    eTypeU32,
+
     eCount,
   };
 
@@ -91,11 +102,18 @@ namespace claire::parser {
       TOKEN_DESC(TokenKind::eOperator, "Operator");
       TOKEN_DESC(TokenKind::eAccess, "Operator");
       TOKEN_DESC(TokenKind::eLParens, "Operator");
+      TOKEN_DESC(TokenKind::eMinus, "Operator");
+      TOKEN_DESC(TokenKind::eArrow, "Operator");
       TOKEN_DESC(TokenKind::ePipe, "Operator");
       TOKEN_DESC(TokenKind::eReservedLet, "Keyword");
       TOKEN_DESC(TokenKind::eReservedIf, "Keyword");
       TOKEN_DESC(TokenKind::eReservedElse, "Keyword");
       TOKEN_DESC(TokenKind::eReservedOpen, "Keyword");
+      TOKEN_DESC(TokenKind::eReservedModule, "Keyword");
+      TOKEN_DESC(TokenKind::eReservedExport, "Keyword");
+      TOKEN_DESC(TokenKind::eReservedExtern, "Keyword");
+      TOKEN_DESC(TokenKind::eTypeBinary, "Type");
+      TOKEN_DESC(TokenKind::eTypeU32, "Type");
     default:
       os << "Unknown";
       break;
@@ -116,11 +134,18 @@ typedef enum {
   eTokenKindOperator,
   eTokenKindAccess,
   eTokenKindLParens,
+  eTokenKindMinus,
+  eTokenKindArrow,
   eTokenKindPipe,
   eTokenKindReservedLet,
   eTokenKindReservedIf,
   eTokenKindReservedElse,
   eTokenKindReservedOpen,
+  eTokenKindReservedModule,
+  eTokenKindReservedExport,
+  eTokenKindReservedExtern,
+  eTokenKindTypeBinary,
+  eTokenKindTypeU32,
   eTokenKindCount,
 } TokenKind;
 

@@ -33,7 +33,7 @@ namespace claire::parser {
     std::unique_ptr<Expr> parse_function_call_expr(
       std::vector<Token>::const_iterator tok, std::unique_ptr<Expr> &&callee);
 
-    std::unique_ptr<ASTNode> parse_open_module_decl(
+    std::unique_ptr<ASTNode> parse_module_open_stmt(
       ParseState &state, std::vector<Token>::const_iterator tok);
 
     auto next_state(ParseState prev, Token const &token);

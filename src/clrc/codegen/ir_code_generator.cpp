@@ -95,10 +95,15 @@ namespace claire::codegen {
     return builder_.CreateRet(llvm::ConstantInt::get(ctx_, ret));
   }
 
-  llvm::Value *IRCodeGenerator::operator()(parser::ModuleDecl const *module) {
-    for (auto const &child : module->children()) {
+  llvm::Value *IRCodeGenerator::operator()(parser::ModuleDecl const *decl) {
+    for (auto const &child : decl->children()) {
       std::visit(*this, child->as_variant());
     }
+    return nullptr;
+  }
+
+  llvm::Value *IRCodeGenerator::operator()(parser::ExternDecl const *decl) {
+    // TODO: see `hard-coded_ffi`
     return nullptr;
   }
 

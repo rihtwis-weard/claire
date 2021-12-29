@@ -23,7 +23,7 @@ uint16_t const ch_to_eqc[256] = {
   ['(']        = offset(Operator),
   [')']        = offset(Operator),
   ['+']        = offset(Operator),
-  ['-']        = offset(Operator),
+  ['-']        = offset(Hyphen),
   ['.']        = offset(Operator),
   [':']        = offset(Separator),
   ['<']        = offset(Operator),
@@ -76,6 +76,7 @@ int const ch_reeval[256] = {
   [state(s) + offset(Digit)]       = state(Numeral),           \
   [state(s) + offset(Separator)]   = state(Separator),         \
   [state(s) + offset(Operator)]    = state(OperatorSingle),    \
+  [state(s) + offset(Hyphen)]      = state(OperatorMulti),     \
   [state(s) + offset(VerticalBar)] = state(OperatorMulti),     \
   [state(s) + offset(DoubleQuote)] = state(String)
 // clang-format on
@@ -101,6 +102,7 @@ uint8_t const lex_trans[offset(Count)] = {
   reduce(Identifier, Digit, Identifier),
   reduce(Identifier, Separator, IdentifierEnd),
   reduce(Identifier, Operator, IdentifierEnd),
+  reduce(Identifier, Hyphen, IdentifierEnd),
   reduce(Identifier, VerticalBar, IdentifierEnd),
   reduce(Identifier, DoubleQuote, IdentifierEnd),
 
@@ -111,6 +113,7 @@ uint8_t const lex_trans[offset(Count)] = {
   reduce(String, Digit, String),
   reduce(String, Separator, String),
   reduce(String, Operator, String),
+  reduce(String, Hyphen, String),
   reduce(String, VerticalBar, String),
   reduce(String, DoubleQuote, StringEnd),
   reduce(String, EOF, EOF),
@@ -122,6 +125,7 @@ uint8_t const lex_trans[offset(Count)] = {
   reduce(Numeral, Digit, Numeral),
   reduce(Numeral, Separator, NumeralEnd),
   reduce(Numeral, Operator, NumeralEnd),
+  reduce(Numeral, Hyphen, NumeralEnd),
   reduce(Numeral, VerticalBar, NumeralEnd),
   reduce(Numeral, DoubleQuote, EOF),
 
@@ -132,6 +136,7 @@ uint8_t const lex_trans[offset(Count)] = {
   reduce(OperatorMulti, Digit, OperatorMultiEnd),
   reduce(OperatorMulti, Separator, OperatorMultiEnd),
   reduce(OperatorMulti, Operator, OperatorMulti),
+  reduce(OperatorMulti, Hyphen, Error),
   reduce(OperatorMulti, VerticalBar, Error),
   reduce(OperatorMulti, DoubleQuote, OperatorMultiEnd),
   reduce(OperatorMulti, EOF, EOF),
@@ -157,7 +162,11 @@ uint8_t const lex_inside[offset(Count)] = {
 
 uint8_t const parse_trans[offset(Count)] = {
   reduce(NewScope, Identifier, IdentifierExpr),
-  reduce(NewScope, ReservedOpen, OpenModuleDecl),
+  reduce(NewScope, ReservedOpen, ModuleOpenStmt),
+  reduce(NewScope, ReservedModule, ModuleDecl),
+  // TODO(rihtwis-weard): eventually enforce export visibility
+  reduce(NewScope, ReservedExport, NewScope),
+  reduce(NewScope, ReservedExtern, ExternDecl),
 
   reduce(IdentifierExpr, Access, NewAccessExpr),
 
@@ -175,7 +184,9 @@ uint8_t const parse_trans[offset(Count)] = {
 
   reduce(FunctionCallExpr, StringLiteral, FunctionArgs),
 
-  reduce(OpenModuleDecl, Identifier, IdentifierExpr),
+  reduce(ModuleOpenStmt, Identifier, IdentifierExpr),
+
+  reduce(ModuleDecl, Identifier, NewScope),
 };
 
 #pragma GCC diagnostic pop

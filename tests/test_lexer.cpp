@@ -12,6 +12,11 @@ int main() {
     Approvals::verifyAll("fib.clr", lexemes);
   };
 
+  "extern"_test = []() {
+    auto lexemes = claire::parser::Lexer{std::string{stdlib_path} + "io.clr"}.lex();
+    Approvals::verifyAll("io.clr", lexemes);
+  };
+
   "exception"_test = []() {
     std::string sources[]{
       "unsupported_multi_operator.clr",
