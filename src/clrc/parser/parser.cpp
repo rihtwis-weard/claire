@@ -152,7 +152,7 @@ namespace claire::parser {
     for (; state > ParseState::eFinal;) {
       if (state = next_state(state, *(++tok)); state <= ParseState::eFinal) {
         return std::make_unique<ExternDecl>(
-          name, std::move(args), return_type, linkage_name);
+          name, std::move(args), return_type, std::make_unique<StringExpr>(linkage_name));
       }
 
       if (state == ParseState::eExternDeclName) {

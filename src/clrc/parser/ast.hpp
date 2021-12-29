@@ -97,30 +97,6 @@ namespace claire::parser {
     std::string type;
   };
 
-  class ExternDecl : public Decl {
-    std::string              name_;
-    std::vector<FunctionArg> args_;
-    std::string              return_type_;
-    std::string              linkage_name_;
-
-  public:
-    ExternDecl(std::string name, std::vector<FunctionArg> &&args, std::string return_type,
-      std::string linkage_name)
-      : name_{std::move(name)}
-      , args_{std::move(args)}
-      , return_type_{std::move(return_type)}
-      , linkage_name_{std::move(linkage_name)} {
-    }
-
-    [[nodiscard]] std::string to_string() const override {
-      return "ExternDecl: " + name_;
-    }
-
-    [[nodiscard]] ASTNodeVariant as_variant() const override {
-      return this;
-    }
-  };
-
   class Expr : public ASTNode {};
 
   class StringExpr : public Expr {
@@ -141,6 +117,34 @@ namespace claire::parser {
 
     [[nodiscard]] ASTNodeVariant as_variant() const override {
       return this;
+    }
+  };
+
+  class ExternDecl : public Decl {
+    std::string                 name_;
+    std::vector<FunctionArg>    args_;
+    std::string                 return_type_;
+    std::unique_ptr<StringExpr> linkage_name_;
+
+  public:
+    ExternDecl(std::string name, std::vector<FunctionArg> &&args, std::string return_type,
+      std::unique_ptr<StringExpr> &&linkage_name)
+      : name_{std::move(name)}
+      , args_{std::move(args)}
+      , return_type_{std::move(return_type)}
+      , linkage_name_{std::move(linkage_name)} {
+    }
+
+    [[nodiscard]] std::string to_string() const override {
+      return "ExternDecl: " + name_;
+    }
+
+    [[nodiscard]] ASTNodeVariant as_variant() const override {
+      return this;
+    }
+
+    [[nodiscard]] std::string linkage_name() const {
+      return linkage_name_->name();
     }
   };
 

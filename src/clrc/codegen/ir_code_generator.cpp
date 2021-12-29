@@ -33,21 +33,12 @@ namespace claire::codegen {
     return target_machine;
   }
 
-  // TODO(rihtwis-weard): need to move to standard library module + AST instead of hard-coding
-  void hardcoded_ffi(llvm::Module &mod, llvm::IRBuilder<> &builder) {
-    // int puts(char const *s);
-    mod.getOrInsertFunction("puts",
-      llvm::FunctionType::get(builder.getInt32Ty(), builder.getInt8PtrTy(), false));
-  }
-
   IRCodeGenerator::IRCodeGenerator(std::string const &source_fname)
     : ctx_{}
     , mod_{"claire", ctx_}
     , builder_{ctx_}
     , machine_{set_target_machine(mod_)} {
     mod_.setSourceFileName(source_fname);
-
-    hardcoded_ffi(mod_, builder_);
   }
 
   std::string IRCodeGenerator::dumps() const {
@@ -103,7 +94,8 @@ namespace claire::codegen {
   }
 
   llvm::Value *IRCodeGenerator::operator()(parser::ExternDecl const *decl) {
-    // TODO: see `hard-coded_ffi`
+    mod_.getOrInsertFunction(decl->linkage_name(),
+      llvm::FunctionType::get(builder_.getInt32Ty(), builder_.getInt8PtrTy(), false));
     return nullptr;
   }
 
