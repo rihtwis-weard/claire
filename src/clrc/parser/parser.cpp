@@ -11,13 +11,12 @@ namespace claire::parser {
   }
 
   template <typename ASTNodeType>
-  std::unique_ptr<ASTNode> Parser::parse(std::vector<Token> const &tokens) {
-    auto root  = std::make_unique<ASTNodeType>();
+  std::unique_ptr<ASTNode> Parser::parse(
+    std::vector<Token> const &tokens, std::string const &id) {
+    auto root  = std::make_unique<ASTNodeType>(id);
     // TODO(rihtwis-weard): `NewScope` synonymous with an additional `Program` state?
     auto state = ParseState::eNewScope;
 
-    //      open IO
-    //      IO.puts("Hello world!")
     for (auto tok = tokens.begin(); tok != tokens.end(); tok++) {
       if (state = next_state(state, *tok); state <= ParseState::eFinal) {
         return root;
@@ -30,12 +29,12 @@ namespace claire::parser {
       }
       case ParseState::eModuleOpenStmt: {
         // TODO(rihtwis-weard): elide `open ModuleName` declaration for stdlib modules
-        root->add(parse_module_open_stmt(state, tok));
+        root->add(parse_module_open_stmt(state, tok, tokens));
         state = ParseState::eNewScope;
         break;
       }
       case ParseState::eExternDecl: {
-        root->add(parse_extern_decl(state, tok));
+        root->add(parse_extern_decl(state, tok, tokens));
         break;
       }
       default:
@@ -47,10 +46,10 @@ namespace claire::parser {
   }
 
   template std::unique_ptr<ASTNode> Parser::parse<ProgramDecl>(
-    std::vector<Token> const &tokens);
+    std::vector<Token> const &tokens, std::string const &id);
 
   template std::unique_ptr<ASTNode> Parser::parse<ModuleDecl>(
-    std::vector<Token> const &tokens);
+    std::vector<Token> const &tokens, std::string const &id);
 
   std::unique_ptr<Expr> Parser::parse_identifier_expr(
     ParseState &state, std::vector<Token>::const_iterator tok) {
@@ -110,13 +109,17 @@ namespace claire::parser {
     return node;
   }
 
-  std::unique_ptr<ASTNode> Parser::parse_module_open_stmt(
-    ParseState &state, std::vector<Token>::const_iterator &tok) {
+  std::unique_ptr<ASTNode> Parser::parse_module_open_stmt(ParseState &state,
+    std::vector<Token>::const_iterator &tok, std::vector<Token> const &tokens) {
 
     auto module_root = std::make_unique<ASTNode>();
 
     for (; state > ParseState::eFinal;) {
-      if (state = next_state(state, *(++tok)); state <= ParseState::eFinal) {
+      if (++tok == tokens.end()) {
+        return module_root;
+      }
+
+      if (state = next_state(state, *tok); state <= ParseState::eFinal) {
         return module_root;
       }
 
@@ -131,18 +134,18 @@ namespace claire::parser {
 
         // TODO(rihwis-weard): don't hard-code module lookup/resolution
         // distribute module registry, file -> module names
-        auto tokens = Lexer{stdlib_path_ + "io.clr"}.lex();
+        auto toks = Lexer{stdlib_path_ + "io.clr"}.lex();
 
         // TODO(rihtwis-weard): module not found exception or save error and keep parsing
-        return parse<ModuleDecl>(tokens);
+        return parse<ModuleDecl>(toks, tok->repr);
       }
     }
 
     return module_root;
   }
 
-  std::unique_ptr<ExternDecl> Parser::parse_extern_decl(
-    ParseState &state, std::vector<Token>::const_iterator tok) {
+  std::unique_ptr<ExternDecl> Parser::parse_extern_decl(ParseState &state,
+    std::vector<Token>::const_iterator tok, std::vector<Token> const &tokens) {
 
     std::string              name{};
     std::vector<FunctionArg> args{};
@@ -150,7 +153,12 @@ namespace claire::parser {
     std::string              linkage_name{};
 
     for (; state > ParseState::eFinal;) {
-      if (state = next_state(state, *(++tok)); state <= ParseState::eFinal) {
+      if (++tok == tokens.end()) {
+        return std::make_unique<ExternDecl>(
+          name, std::move(args), return_type, std::make_unique<StringExpr>(linkage_name));
+      }
+
+      if (state = next_state(state, *tok); state <= ParseState::eFinal) {
         return std::make_unique<ExternDecl>(
           name, std::move(args), return_type, std::make_unique<StringExpr>(linkage_name));
       }
