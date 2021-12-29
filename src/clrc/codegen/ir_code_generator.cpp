@@ -94,8 +94,23 @@ namespace claire::codegen {
   }
 
   llvm::Value *IRCodeGenerator::operator()(parser::ExternDecl const *decl) {
-    mod_.getOrInsertFunction(decl->linkage_name(),
-      llvm::FunctionType::get(builder_.getInt32Ty(), builder_.getInt8PtrTy(), false));
+    auto result = builder_.getVoidTy();
+    if (decl->return_type() == "u32") {
+      result = builder_.getInt32Ty();
+    }
+
+    std::vector<llvm::Type *> params{};
+
+    for (auto const &arg : decl->args()) {
+      if (arg.type == "binary") {
+        params.push_back(builder_.getInt8PtrTy());
+      } else {
+        // TODO(rihtwis-weard): error handling because args don't matchup
+      }
+    }
+
+    mod_.getOrInsertFunction(
+      decl->linkage_name(), llvm::FunctionType::get(result, params, false));
     return nullptr;
   }
 

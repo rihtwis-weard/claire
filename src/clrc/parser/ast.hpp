@@ -143,6 +143,14 @@ namespace claire::parser {
       return this;
     }
 
+    [[nodiscard]] std::vector<FunctionArg> const &args() const {
+      return args_;
+    }
+
+    [[nodiscard]] std::string return_type() const {
+      return return_type_;
+    }
+
     [[nodiscard]] std::string linkage_name() const {
       return linkage_name_->name();
     }
