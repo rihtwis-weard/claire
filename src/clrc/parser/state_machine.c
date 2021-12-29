@@ -157,6 +157,7 @@ uint8_t const lex_inside[offset(Count)] = {
 
 uint8_t const parse_trans[offset(Count)] = {
   reduce(NewScope, Identifier, IdentifierExpr),
+  reduce(NewScope, ReservedOpen, OpenModuleDecl),
 
   reduce(IdentifierExpr, Access, NewAccessExpr),
 
@@ -173,6 +174,8 @@ uint8_t const parse_trans[offset(Count)] = {
   reduce(GrowAccessExpr, LParens, FunctionCallExpr),
 
   reduce(FunctionCallExpr, StringLiteral, FunctionArgs),
+
+  reduce(OpenModuleDecl, Identifier, IdentifierExpr),
 };
 
 #pragma GCC diagnostic pop

@@ -52,6 +52,7 @@ namespace claire::parser {
     eGrowAccessExpr,
     eFunctionCallExpr,
     eFunctionArgs,
+    eOpenModuleDecl,
     eError,
     eCount,
   };
@@ -82,7 +83,7 @@ namespace claire::parser {
   extern "C" std::uint8_t const
     parse_trans[utype(ParseState::eCount) * utype(LexicalState::eCount)];
 
-} // namespace claire
+} // namespace claire::parser
 
 #else
 
@@ -132,6 +133,7 @@ typedef enum {
   eParseStateGrowAccessExpr,
   eParseStateFunctionCallExpr,
   eParseStateFunctionArgs,
+  eParseStateOpenModuleDecl,
   eParseStateError,
   eParseStateCount,
 } ParseState;

@@ -14,7 +14,7 @@ int main(int argc, char const *argv[]) {
 
   std::size_t i{};
   for (auto v : claire::parser::parse_trans) {
-    std::cout << "[" << i++ << "]: " << v << "\n";
+    std::cout << "[" << i++ << "]: " << static_cast<int>(v) << "\n";
   }
 
   constexpr auto stdlib_path = "../../src/stdlib/";

@@ -21,10 +21,11 @@ namespace claire::parser {
   class IdentifierExpr;
   class StringExpr;
   class FunctionCallExpr;
+  class ModuleDecl;
 
-  using ASTNodeVariant =
-    std::variant<AccessExpr const *, ASTNode const *, StringExpr const *,
-      IdentifierExpr const *, FunctionCallExpr const *, ProgramDecl const *>;
+  using ASTNodeVariant = std::variant<AccessExpr const *, ASTNode const *,
+    StringExpr const *, IdentifierExpr const *, FunctionCallExpr const *,
+    ProgramDecl const *, ModuleDecl const *>;
 
   class ASTNode {
   protected:
@@ -66,6 +67,17 @@ namespace claire::parser {
   public:
     [[nodiscard]] std::string to_string() const override {
       return "ProgramDecl";
+    }
+
+    [[nodiscard]] ASTNodeVariant as_variant() const override {
+      return this;
+    }
+  };
+
+  class ModuleDecl : public ASTNode {
+  public:
+    [[nodiscard]] std::string to_string() const override {
+      return "ModuleDecl";
     }
 
     [[nodiscard]] ASTNodeVariant as_variant() const override {
@@ -147,7 +159,7 @@ namespace claire::parser {
 
   class ASTVisitor
     : public Visitor<llvm::Value *, ASTNode, ProgramDecl, StringExpr, IdentifierExpr,
-        FunctionCallExpr, AccessExpr> {
+        FunctionCallExpr, AccessExpr, ModuleDecl> {
 
   public:
     llvm::Value *operator()(ASTNode const *) override {

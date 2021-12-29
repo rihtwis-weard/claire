@@ -95,6 +95,13 @@ namespace claire::codegen {
     return builder_.CreateRet(llvm::ConstantInt::get(ctx_, ret));
   }
 
+  llvm::Value *IRCodeGenerator::operator()(parser::ModuleDecl const *module) {
+    for (auto const &child : module->children()) {
+      std::visit(*this, child->as_variant());
+    }
+    return nullptr;
+  }
+
   // TODO(rihtwis-weard): error-handling
   llvm::Value *IRCodeGenerator::operator()(parser::StringExpr const *expr) {
     return builder_.CreateGlobalStringPtr(expr->name());
