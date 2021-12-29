@@ -120,6 +120,9 @@ namespace claire::codegen {
   }
 
   llvm::Value *IRCodeGenerator::operator()(parser::FunctionCallExpr const *expr) {
+    // TODO(rihtwis-weard): cleanup module function access
+    //                      also, can/should separate modules be compiled as separate object files?
+    //                      or always/conditionally be inlined as AST?
     auto callee = mod_.getFunction("puts");
     if (not callee) {
       std::cerr << "unknown function referenced!\n";
