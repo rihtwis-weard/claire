@@ -42,14 +42,14 @@ namespace claire::parser {
 #endif
 
   public:
-    explicit ASTNode(std::string id = "")
-      : id_{std::move(id)} {
-    }
-
 #ifdef CTEST
     explicit ASTNode(std::string id = "", std::size_t level = 0)
       : id_{std::move(id)}
       , level_{level} {
+    }
+#else
+    explicit ASTNode(std::string id = "")
+      : id_{std::move(id)} {
     }
 #endif
 
