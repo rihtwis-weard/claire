@@ -87,14 +87,14 @@ namespace claire::codegen {
   }
 
   llvm::Value *IRCodeGenerator::operator()(parser::ModuleDecl const *decl) {
-    mod_fns_[decl->name()] = {};
+    mod_fns_[decl->id()] = {};
 
     for (auto const &child : decl->children()) {
       auto callee = std::visit(*this, child->as_variant());
 
       // TODO(rihtwis-weard): nested visitors
       if (auto edecl = dynamic_cast<parser::ExternDecl const *>(child.get())) {
-        mod_fns_[decl->name()][edecl->id()] = callee;
+        mod_fns_[decl->id()][edecl->id()] = callee;
       }
     }
     return nullptr;
@@ -126,7 +126,7 @@ namespace claire::codegen {
 
   // TODO(rihtwis-weard): error-handling
   llvm::Value *IRCodeGenerator::operator()(parser::StringExpr const *expr) {
-    return builder_.CreateGlobalStringPtr(expr->name());
+    return builder_.CreateGlobalStringPtr(expr->value());
   }
 
   llvm::Value *IRCodeGenerator::operator()(parser::FunctionCallExpr const *expr) {

@@ -32,9 +32,14 @@ namespace claire::parser {
 
   class ASTNode {
   protected:
+    std::string                           id_;
     std::vector<std::unique_ptr<ASTNode>> children_;
 
   public:
+    explicit ASTNode(std::string id = "")
+      : id_{std::move(id)} {
+    }
+
     void add(std::unique_ptr<ASTNode> &&node) {
       children_.emplace_back(std::move(node));
     }
@@ -57,6 +62,10 @@ namespace claire::parser {
 
     virtual ~ASTNode() = default;
 
+    [[nodiscard]] virtual std::string const &id() const {
+      return id_;
+    }
+
     [[nodiscard]] virtual std::vector<std::unique_ptr<ASTNode>> const &children() const {
       return children_;
     }
@@ -66,14 +75,15 @@ namespace claire::parser {
     }
   };
 
-  class Decl : public ASTNode {};
+  class Decl : virtual public ASTNode {};
+
+  class Expr : virtual public ASTNode {};
 
   class ProgramDecl : public Decl {
-    std::string name_;
 
   public:
-    explicit ProgramDecl(std::string name)
-      : name_{std::move(name)} {
+    explicit ProgramDecl(std::string id)
+      : ASTNode{std::move(id)} {
     }
 
     [[nodiscard]] std::string to_string() const override {
@@ -86,24 +96,18 @@ namespace claire::parser {
   };
 
   class ModuleDecl : public Decl {
-    std::string name_;
-
   public:
-    explicit ModuleDecl(std::string name)
-      : name_{std::move(name)} {
+    explicit ModuleDecl(std::string id)
+      : ASTNode{std::move(id)} {
     }
 
     [[nodiscard]] std::string to_string() const override {
-      return "ModuleDecl: " + name_;
+      return "ModuleDecl: " + id_;
     }
 
     [[nodiscard]] ASTNodeVariant as_variant() const override {
       return this;
     }
-
-    [[nodiscard]] std::string name() const {
-      return name_;
-    };
   };
 
   struct FunctionArg {
@@ -111,46 +115,41 @@ namespace claire::parser {
     std::string type;
   };
 
-  class Expr : public ASTNode {};
-
   class StringExpr : public Expr {
-    std::string name_;
-
   public:
-    explicit StringExpr(std::string name)
-      : name_{std::move(name)} {
+    explicit StringExpr(std::string id)
+      : ASTNode{std::move(id)} {
     }
 
     [[nodiscard]] std::string to_string() const override {
-      return "StringLiteral: " + name_;
-    }
-
-    [[nodiscard]] std::string name() const {
-      return name_.substr(1, name_.size() - 2);
+      return "StringLiteral: " + id_;
     }
 
     [[nodiscard]] ASTNodeVariant as_variant() const override {
       return this;
     }
+
+    [[nodiscard]] std::string value() const {
+      return id_.substr(1, id_.size() - 2);
+    }
   };
 
   class ExternDecl : public Decl {
-    std::string                 name_;
     std::vector<FunctionArg>    args_;
     std::string                 return_type_;
     std::unique_ptr<StringExpr> linkage_name_;
 
   public:
-    ExternDecl(std::string name, std::vector<FunctionArg> &&args, std::string return_type,
+    ExternDecl(std::string id, std::vector<FunctionArg> &&args, std::string return_type,
       std::unique_ptr<StringExpr> &&linkage_name)
-      : name_{std::move(name)}
+      : ASTNode{std::move(id)}
       , args_{std::move(args)}
       , return_type_{std::move(return_type)}
       , linkage_name_{std::move(linkage_name)} {
     }
 
     [[nodiscard]] std::string to_string() const override {
-      return "ExternDecl: " + name_;
+      return "ExternDecl: " + id_;
     }
 
     [[nodiscard]] ASTNodeVariant as_variant() const override {
@@ -161,53 +160,37 @@ namespace claire::parser {
       return args_;
     }
 
-    [[nodiscard]] std::string const &id() const {
-      return name_;
-    }
-
     [[nodiscard]] std::string return_type() const {
       return return_type_;
     }
 
     [[nodiscard]] std::string linkage_name() const {
-      return linkage_name_->name();
+      return linkage_name_->value();
     }
   };
 
   class IdentifierExpr : public Expr {
-    std::string id_;
-    std::string name_;
 
   public:
-    explicit IdentifierExpr(std::string name)
-      : id_{std::move(name)}
-      , name_{id_} {
+    explicit IdentifierExpr(std::string id)
+      : ASTNode{std::move(id)} {
     }
 
     [[nodiscard]] std::string to_string() const override {
-      return name_;
-    }
-
-    [[nodiscard]] std::string const &id() const {
       return id_;
     }
   };
 
   class ModuleAccessExpr : public Expr {
-    std::string              id_;
     std::vector<std::string> module_names_;
 
   public:
     explicit ModuleAccessExpr(IdentifierExpr const &expr)
-      : id_{expr.id()} {
+      : ASTNode{expr.id()} {
     }
 
     [[nodiscard]] std::string to_string() const override {
       return join(module_names_.begin(), module_names_.end(), ".") + "." + id_;
-    }
-
-    [[nodiscard]] std::string const &id() const {
-      return id_;
     }
 
     [[nodiscard]] std::string const &module_name() const {
