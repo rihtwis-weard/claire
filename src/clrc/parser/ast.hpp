@@ -14,6 +14,7 @@
 
 namespace claire::parser {
 
+  template <typename R>
   class ASTVisitor;
 
   class ASTNode;
@@ -23,41 +24,40 @@ namespace claire::parser {
   class FunctionCallExpr;
   class ModuleDecl;
   class ExternDecl;
+  class ModuleAccessExpr;
 
   // TODO(rihwis-weard): can use custom visitor pattern instead of `std::visit` and `std::variant`
   //                     and use virtual dispatch
   using ASTNodeVariant = std::variant<ASTNode const *, StringExpr const *,
     IdentifierExpr const *, FunctionCallExpr const *, ProgramDecl const *,
-    ModuleDecl const *, ExternDecl const *>;
+    ModuleDecl const *, ExternDecl const *, ModuleAccessExpr const *>;
 
   class ASTNode {
   protected:
     std::string                           id_;
     std::vector<std::unique_ptr<ASTNode>> children_;
 
+#ifdef CTEST
+    std::size_t level_;
+#endif
+
   public:
+#ifdef CTEST
+    explicit ASTNode(std::string id = "", std::size_t level = 0)
+      : id_{std::move(id)}
+      , level_{level} {
+    }
+#else
     explicit ASTNode(std::string id = "")
       : id_{std::move(id)} {
     }
+#endif
 
     void add(std::unique_ptr<ASTNode> &&node) {
+#ifdef CTEST
+      node->update_level(this);
+#endif
       children_.emplace_back(std::move(node));
-    }
-
-    [[nodiscard]] virtual std::string to_string() const {
-      return "ASTNode: root";
-    }
-
-    [[nodiscard]] std::string pretty_print(std::size_t level = 0) const {
-      std::string repr{};
-      for (std::size_t i = 0; i < level; i++) {
-        repr += "\t";
-      }
-      repr += "└──" + to_string() + "\n";
-      for (auto const &child : children_) {
-        repr += child->pretty_print(level + 1);
-      }
-      return repr;
     }
 
     virtual ~ASTNode() = default;
@@ -66,6 +66,12 @@ namespace claire::parser {
       return id_;
     }
 
+#ifdef CTEST
+    [[nodiscard]] virtual std::size_t level() const {
+      return level_;
+    }
+#endif
+
     [[nodiscard]] virtual std::vector<std::unique_ptr<ASTNode>> const &children() const {
       return children_;
     }
@@ -73,6 +79,16 @@ namespace claire::parser {
     [[nodiscard]] virtual ASTNodeVariant as_variant() const {
       return this;
     }
+
+  private:
+#ifdef CTEST
+    void update_level(ASTNode const *parent) {
+      level_ = parent->level_ + 1;
+      for (auto const &child : children_) {
+        child->update_level(this);
+      }
+    }
+#endif
   };
 
   class Decl : virtual public ASTNode {};
@@ -86,10 +102,6 @@ namespace claire::parser {
       : ASTNode{std::move(id)} {
     }
 
-    [[nodiscard]] std::string to_string() const override {
-      return "ProgramDecl";
-    }
-
     [[nodiscard]] ASTNodeVariant as_variant() const override {
       return this;
     }
@@ -99,10 +111,6 @@ namespace claire::parser {
   public:
     explicit ModuleDecl(std::string id)
       : ASTNode{std::move(id)} {
-    }
-
-    [[nodiscard]] std::string to_string() const override {
-      return "ModuleDecl: " + id_;
     }
 
     [[nodiscard]] ASTNodeVariant as_variant() const override {
@@ -119,10 +127,6 @@ namespace claire::parser {
   public:
     explicit StringExpr(std::string id)
       : ASTNode{std::move(id)} {
-    }
-
-    [[nodiscard]] std::string to_string() const override {
-      return "StringLiteral: " + id_;
     }
 
     [[nodiscard]] ASTNodeVariant as_variant() const override {
@@ -148,10 +152,6 @@ namespace claire::parser {
       , linkage_name_{std::move(linkage_name)} {
     }
 
-    [[nodiscard]] std::string to_string() const override {
-      return "ExternDecl: " + id_;
-    }
-
     [[nodiscard]] ASTNodeVariant as_variant() const override {
       return this;
     }
@@ -175,10 +175,6 @@ namespace claire::parser {
     explicit IdentifierExpr(std::string id)
       : ASTNode{std::move(id)} {
     }
-
-    [[nodiscard]] std::string to_string() const override {
-      return id_;
-    }
   };
 
   class ModuleAccessExpr : public Expr {
@@ -189,8 +185,8 @@ namespace claire::parser {
       : ASTNode{expr.id()} {
     }
 
-    [[nodiscard]] std::string to_string() const override {
-      return join(module_names_.begin(), module_names_.end(), ".") + "." + id_;
+    [[nodiscard]] ASTNodeVariant as_variant() const override {
+      return this;
     }
 
     [[nodiscard]] std::string const &module_name() const {
@@ -212,10 +208,6 @@ namespace claire::parser {
       : callee_{std::move(callee)} {
     }
 
-    [[nodiscard]] std::string to_string() const override {
-      return "FunctionCallExpr: " + callee_->to_string();
-    }
-
     [[nodiscard]] ASTNodeVariant as_variant() const override {
       return this;
     }
@@ -225,12 +217,13 @@ namespace claire::parser {
     }
   };
 
+  template <typename R = llvm::Value *>
   class ASTVisitor
-    : public Visitor<llvm::Value *, ASTNode, ProgramDecl, StringExpr, IdentifierExpr,
-        FunctionCallExpr, ModuleDecl, ExternDecl> {
+    : public Visitor<R, ASTNode, ProgramDecl, StringExpr, IdentifierExpr,
+        FunctionCallExpr, ModuleDecl, ExternDecl, ModuleAccessExpr> {
 
   public:
-    llvm::Value *operator()(ASTNode const *) override {
+    R operator()(ASTNode const *) override {
       return nullptr;
     }
   };

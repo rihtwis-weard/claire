@@ -15,7 +15,7 @@
 
 namespace claire::codegen {
 
-  class IRCodeGenerator : public parser::ASTVisitor {
+  class IRCodeGenerator : public parser::ASTVisitor<> {
     llvm::LLVMContext    ctx_;
     llvm::Module         mod_;
     llvm::IRBuilder<>    builder_;
@@ -39,6 +39,10 @@ namespace claire::codegen {
     llvm::Value *operator()(parser::ExternDecl const *) override;
     llvm::Value *operator()(parser::StringExpr const *) override;
     llvm::Value *operator()(parser::FunctionCallExpr const *) override;
+
+    llvm::Value *operator()(parser::ModuleAccessExpr const *) override {
+      return nullptr;
+    }
 
     llvm::Value *operator()(parser::IdentifierExpr const *) override {
       return nullptr;
