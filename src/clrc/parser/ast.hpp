@@ -35,18 +35,28 @@ namespace claire::parser {
   class ASTNode {
   protected:
     std::string                           id_;
-    std::size_t                           level_;
     std::vector<std::unique_ptr<ASTNode>> children_;
 
+#ifdef CTEST
+    std::size_t level_;
+#endif
+
   public:
+    explicit ASTNode(std::string id = "")
+      : id_{std::move(id)} {
+    }
+
+#ifdef CTEST
     explicit ASTNode(std::string id = "", std::size_t level = 0)
       : id_{std::move(id)}
       , level_{level} {
     }
+#endif
 
     void add(std::unique_ptr<ASTNode> &&node) {
-      // TODO(rihtwis-weard): faster way of computing/setting this
+#ifdef CTEST
       node->update_level(this);
+#endif
       children_.emplace_back(std::move(node));
     }
 
@@ -56,9 +66,11 @@ namespace claire::parser {
       return id_;
     }
 
+#ifdef CTEST
     [[nodiscard]] virtual std::size_t level() const {
       return level_;
     }
+#endif
 
     [[nodiscard]] virtual std::vector<std::unique_ptr<ASTNode>> const &children() const {
       return children_;
@@ -69,12 +81,14 @@ namespace claire::parser {
     }
 
   private:
+#ifdef CTEST
     void update_level(ASTNode const *parent) {
       level_ = parent->level_ + 1;
       for (auto const &child : children_) {
         child->update_level(this);
       }
     }
+#endif
   };
 
   class Decl : virtual public ASTNode {};

@@ -7,6 +7,10 @@ function(add_claire_test TARGET ENTRY)
       ${CMAKE_SOURCE_DIR}/tests
       ${CMAKE_SOURCE_DIR}/src/clrc
   )
+  target_compile_definitions(${TEST_EXE}
+    PRIVATE
+      CTEST=1
+  )
   target_compile_options(${TEST_EXE}
     PRIVATE
       ${CLAIRE_COMPILE_OPTIONS}
