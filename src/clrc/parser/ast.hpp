@@ -18,7 +18,6 @@ namespace claire::parser {
 
   class ASTNode;
   class ProgramDecl;
-  class AccessExpr;
   class IdentifierExpr;
   class StringExpr;
   class FunctionCallExpr;
@@ -27,9 +26,9 @@ namespace claire::parser {
 
   // TODO(rihwis-weard): can use custom visitor pattern instead of `std::visit` and `std::variant`
   //                     and use virtual dispatch
-  using ASTNodeVariant = std::variant<AccessExpr const *, ASTNode const *,
-    StringExpr const *, IdentifierExpr const *, FunctionCallExpr const *,
-    ProgramDecl const *, ModuleDecl const *, ExternDecl const *>;
+  using ASTNodeVariant = std::variant<ASTNode const *, StringExpr const *,
+    IdentifierExpr const *, FunctionCallExpr const *, ProgramDecl const *,
+    ModuleDecl const *, ExternDecl const *>;
 
   class ASTNode {
   protected:
@@ -162,6 +161,10 @@ namespace claire::parser {
       return args_;
     }
 
+    [[nodiscard]] std::string const &id() const {
+      return name_;
+    }
+
     [[nodiscard]] std::string return_type() const {
       return return_type_;
     }
@@ -200,11 +203,16 @@ namespace claire::parser {
     }
 
     [[nodiscard]] std::string to_string() const override {
-      return join(module_names_.begin(), module_names_.end()) + "." + id_;
+      return join(module_names_.begin(), module_names_.end(), ".") + "." + id_;
     }
 
     [[nodiscard]] std::string const &id() const {
       return id_;
+    }
+
+    [[nodiscard]] std::string const &module_name() const {
+      // TODO(rihtwis-weard): support for nested modules
+      return module_names_[0];
     }
 
     void grow(std::string const &id) {
@@ -228,11 +236,15 @@ namespace claire::parser {
     [[nodiscard]] ASTNodeVariant as_variant() const override {
       return this;
     }
+
+    [[nodiscard]] Expr const *callee() const {
+      return callee_.get();
+    }
   };
 
   class ASTVisitor
     : public Visitor<llvm::Value *, ASTNode, ProgramDecl, StringExpr, IdentifierExpr,
-        FunctionCallExpr, AccessExpr, ModuleDecl, ExternDecl> {
+        FunctionCallExpr, ModuleDecl, ExternDecl> {
 
   public:
     llvm::Value *operator()(ASTNode const *) override {
