@@ -62,7 +62,7 @@ namespace claire::parser {
 
       switch (state) {
       case ParseState::eNewAccessExpr: {
-        return parse_access_expr(tok, std::move(node));
+        return parse_module_access_expr(tok, *node);
       }
       default:
         break;
@@ -72,10 +72,10 @@ namespace claire::parser {
     return node;
   }
 
-  std::unique_ptr<Expr> Parser::parse_access_expr(
-    std::vector<Token>::const_iterator tok, std::unique_ptr<IdentifierExpr> &&expr) {
+  std::unique_ptr<Expr> Parser::parse_module_access_expr(
+    std::vector<Token>::const_iterator tok, IdentifierExpr const &expr) {
 
-    std::unique_ptr<Expr> node = std::make_unique<AccessExpr>(std::move(expr));
+    auto node = std::make_unique<ModuleAccessExpr>(expr);
 
     for (auto state = ParseState::eNewAccessExpr; state > ParseState::eFinal;) {
       if (state = next_state(state, *(++tok)); state <= ParseState::eFinal) {
@@ -83,9 +83,9 @@ namespace claire::parser {
       }
 
       if (state == ParseState::eGrowAccessExpr) {
-        node->add(std::make_unique<IdentifierExpr>(tok->repr));
+        node->grow(tok->repr);
       } else if (state == ParseState::eFunctionCallExpr) {
-        node = parse_function_call_expr(tok, std::move(node));
+        return parse_function_call_expr(tok, std::move(node));
       }
     }
     return node;

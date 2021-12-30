@@ -9,6 +9,7 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Value.h>
 
+#include "../utils.hpp"
 #include "../visitor.hpp"
 
 namespace claire::parser {
@@ -171,15 +172,44 @@ namespace claire::parser {
   };
 
   class IdentifierExpr : public Expr {
+    std::string id_;
     std::string name_;
 
   public:
     explicit IdentifierExpr(std::string name)
-      : name_{std::move(name)} {
+      : id_{std::move(name)}
+      , name_{id_} {
     }
 
     [[nodiscard]] std::string to_string() const override {
       return name_;
+    }
+
+    [[nodiscard]] std::string const &id() const {
+      return id_;
+    }
+  };
+
+  class ModuleAccessExpr : public Expr {
+    std::string              id_;
+    std::vector<std::string> module_names_;
+
+  public:
+    explicit ModuleAccessExpr(IdentifierExpr const &expr)
+      : id_{expr.id()} {
+    }
+
+    [[nodiscard]] std::string to_string() const override {
+      return join(module_names_.begin(), module_names_.end()) + "." + id_;
+    }
+
+    [[nodiscard]] std::string const &id() const {
+      return id_;
+    }
+
+    void grow(std::string const &id) {
+      module_names_.push_back(id_);
+      id_ = id;
     }
   };
 
@@ -211,7 +241,7 @@ namespace claire::parser {
     }
 
     [[nodiscard]] std::string to_string() const override {
-      return "FunctionCall: " + callee_->to_string();
+      return "FunctionCallExpr: " + callee_->to_string();
     }
 
     [[nodiscard]] ASTNodeVariant as_variant() const override {
