@@ -87,13 +87,23 @@ namespace claire::codegen {
   }
 
   llvm::Value *IRCodeGenerator::operator()(parser::ModuleDecl const *decl) {
+    mod_fns_[decl->name()] = {};
+
     for (auto const &child : decl->children()) {
-      std::visit(*this, child->as_variant());
+      auto callee = std::visit(*this, child->as_variant());
+
+      // TODO(rihtwis-weard): nested visitors
+      if (auto edecl = dynamic_cast<parser::ExternDecl const *>(child.get())) {
+        mod_fns_[decl->name()][edecl->id()] = callee;
+      }
     }
     return nullptr;
   }
 
   llvm::Value *IRCodeGenerator::operator()(parser::ExternDecl const *decl) {
+    // TODO(rihtwis-weard): `ExternDecl` allows generic typing and binding to any value,
+    //                      does not assume function type signature
+
     auto result = builder_.getVoidTy();
     if (decl->return_type() == "u32") {
       result = builder_.getInt32Ty();
@@ -109,9 +119,9 @@ namespace claire::codegen {
       }
     }
 
-    mod_.getOrInsertFunction(
+    auto fn = mod_.getOrInsertFunction(
       decl->linkage_name(), llvm::FunctionType::get(result, params, false));
-    return nullptr;
+    return fn.getCallee();
   }
 
   // TODO(rihtwis-weard): error-handling
@@ -120,26 +130,34 @@ namespace claire::codegen {
   }
 
   llvm::Value *IRCodeGenerator::operator()(parser::FunctionCallExpr const *expr) {
-    // TODO(rihtwis-weard): cleanup module function access
-    //                      also, can/should separate modules be compiled as separate object files?
+    // TODO(rihtwis-weard): can/should separate modules be compiled as separate object files?
     //                      or always/conditionally be inlined as AST?
-    auto callee = mod_.getFunction("puts");
-    if (not callee) {
-      std::cerr << "unknown function referenced!\n";
-      return nullptr;
-    }
 
-    std::vector<llvm::Value *> args;
-    for (auto const &child : expr->children()) {
-      if (auto arg = std::visit(*this, child->as_variant()); arg) {
-        args.push_back(arg);
+    // TODO(rihtwis-weard): nested visitors vs. if statements for function callee resolution?
+    if (auto ma_expr = dynamic_cast<parser::ModuleAccessExpr const *>(expr->callee())) {
+      auto value = mod_fns_.at(ma_expr->module_name()).at(ma_expr->id());
+
+      std::vector<llvm::Value *> args;
+      for (auto const &child : expr->children()) {
+        if (auto arg = std::visit(*this, child->as_variant()); arg) {
+          args.push_back(arg);
+        } else {
+          std::cerr << "failed to create function arg!\n";
+          return nullptr;
+        }
+      }
+
+      if (auto callee = mod_.getFunction(value->getName())) {
+        return builder_.CreateCall(callee, args, "calltmp");
       } else {
-        std::cerr << "failed to create function arg!\n";
+        std::cerr << "unknown function referenced!\n";
         return nullptr;
       }
-    }
 
-    return builder_.CreateCall(callee, args, "calltmp");
+    } else {
+      std::cerr << "function callee type is unsupported or unknown!\n";
+      return nullptr;
+    }
   }
 
 } // namespace claire::codegen

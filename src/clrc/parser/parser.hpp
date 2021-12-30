@@ -28,8 +28,8 @@ namespace claire::parser {
     std::unique_ptr<Expr> parse_identifier_expr(
       ParseState &state, std::vector<Token>::const_iterator tok);
 
-    std::unique_ptr<Expr> parse_access_expr(
-      std::vector<Token>::const_iterator tok, std::unique_ptr<IdentifierExpr> &&expr);
+    std::unique_ptr<Expr> parse_module_access_expr(
+      std::vector<Token>::const_iterator tok, IdentifierExpr const &expr);
 
     std::unique_ptr<Expr> parse_function_call_expr(
       std::vector<Token>::const_iterator tok, std::unique_ptr<Expr> &&callee);
