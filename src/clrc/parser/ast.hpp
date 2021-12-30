@@ -213,25 +213,6 @@ namespace claire::parser {
     }
   };
 
-  class AccessExpr : public Expr {
-
-  public:
-    explicit AccessExpr(std::unique_ptr<IdentifierExpr> &&expr) {
-      add(std::move(expr));
-    }
-
-    [[nodiscard]] std::string to_string() const override {
-      std::string repr{};
-      for (std::size_t i = 0; i < children_.size(); i++) {
-        repr += children_.at(i)->to_string();
-        if (i != children_.size() - 1) {
-          repr += ".";
-        }
-      }
-      return "AccessExpression: " + repr;
-    }
-  };
-
   class FunctionCallExpr : public Expr {
     std::unique_ptr<Expr> callee_;
 
