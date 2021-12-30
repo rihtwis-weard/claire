@@ -69,7 +69,13 @@ namespace claire::parser {
   class Decl : public ASTNode {};
 
   class ProgramDecl : public Decl {
+    std::string name_;
+
   public:
+    explicit ProgramDecl(std::string name)
+      : name_{std::move(name)} {
+    }
+
     [[nodiscard]] std::string to_string() const override {
       return "ProgramDecl";
     }
@@ -80,16 +86,24 @@ namespace claire::parser {
   };
 
   class ModuleDecl : public Decl {
+    std::string name_;
 
-    // TODO(rihtwis-weard): store module name
   public:
+    explicit ModuleDecl(std::string name)
+      : name_{std::move(name)} {
+    }
+
     [[nodiscard]] std::string to_string() const override {
-      return "ModuleDecl";
+      return "ModuleDecl: " + name_;
     }
 
     [[nodiscard]] ASTNodeVariant as_variant() const override {
       return this;
     }
+
+    [[nodiscard]] std::string name() const {
+      return name_;
+    };
   };
 
   struct FunctionArg {
