@@ -1,20 +1,20 @@
-FROM conanio/gcc10:1.43.0 AS base
+FROM conanio/gcc10:1.46.2 AS base
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
 # Switch to root user for installing updates and dependencies
 USER root
 
+RUN apt-get update && apt-get dist-upgrade -y
+
 # Install build dependencies
-RUN apt-get update \
-  && apt-get install -y \
+RUN apt-get install -y \
     ssh \
     cmake \
     ninja-build \
     gdb \
     valgrind \
     locales-all \
-    dos2unix \
     rsync \
   && apt-get clean
 
@@ -34,19 +34,22 @@ RUN useradd -m clion \
 
 RUN usermod -aG sudo -s /bin/bash clion
 
+RUN echo 'export PATH="/opt/pyenv/shims:${PATH}"' >> /etc/environment
+
 # Pre-install project dependencies
 USER clion
 
 WORKDIR /home/clion
 
-ENV CMAKE_BUILD_DIR="cmake-build-debug"
 ENV PATH=/opt/pyenv/shims:${PATH}
 
 COPY --chown=clion:clion conanfile.py /tmp
-RUN mkdir -m 777 "/tmp/${CMAKE_BUILD_DIR}"
+RUN mkdir -m 777 "/tmp/cmake-build-debug"
+RUN mkdir -m 777 "/tmp/cmake-build-relwithdebinfo"
 RUN conan profile new default --detect
 RUN conan profile update settings.compiler.libcxx=libstdc++11 default
-RUN conan install /tmp --install-folder "/tmp/${CMAKE_BUILD_DIR}" --update
+RUN conan install /tmp --install-folder "/tmp/cmake-build-debug" --update
+RUN conan install /tmp --install-folder "/tmp/cmake-build-relwithdebinfo" --update
 
 # Switch back to root user to start sshd
 USER root

@@ -10,6 +10,8 @@ services:
       - "2222:22"
     networks:
       - workspace_network
+    # for profiling so that kernel.kptr_resrict=0 and kernel.perf_event_paranoid=1 can be set properly
+    privileged: true
     cap_add:
       - SYS_PTRACE
 
