@@ -4,12 +4,12 @@
 
 namespace claire {
 
-  class unexpected_eof : std::exception {
+  class unexpected_eof : public std::exception {
   public:
     [[nodiscard]] char const *what() const noexcept override;
   };
 
-  class invalid_lexeme : std::exception {
+  class invalid_lexeme : public std::exception {
   public:
     [[nodiscard]] char const *what() const noexcept override;
   };

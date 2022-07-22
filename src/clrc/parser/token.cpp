@@ -6,7 +6,10 @@ namespace claire::parser {
     {".", TokenKind::eAccess},
     {"(", TokenKind::eLParens},
     {"-", TokenKind::eMinus},
+    {"{", TokenKind::eScopeBegin},
+    {"}", TokenKind::eScopeEnd},
     // Special Multi Operators
+    {"::", TokenKind::eAccess},
     {"->", TokenKind::eArrow},
     {"|>", TokenKind::ePipe},
     // Reserved Keywords

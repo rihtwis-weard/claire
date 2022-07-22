@@ -20,11 +20,14 @@ namespace claire::parser {
 
     // Special Operators
     eAccess,
+    eAccessNamespace,
     eLParens,
     eMinus,
     // Multi
     eArrow,
     ePipe,
+    eScopeBegin,
+    eScopeEnd,
 
     // Reserved Keywords
     eReservedFunc,
@@ -102,10 +105,13 @@ namespace claire::parser {
       TOKEN_DESC(TokenKind::eSeparator, "Separator");
       TOKEN_DESC(TokenKind::eOperator, "Operator");
       TOKEN_DESC(TokenKind::eAccess, "Operator");
+      TOKEN_DESC(TokenKind::eAccessNamespace, "Operator");
       TOKEN_DESC(TokenKind::eLParens, "Operator");
       TOKEN_DESC(TokenKind::eMinus, "Operator");
       TOKEN_DESC(TokenKind::eArrow, "Operator");
       TOKEN_DESC(TokenKind::ePipe, "Operator");
+      TOKEN_DESC(TokenKind::eScopeBegin, "Operator");
+      TOKEN_DESC(TokenKind::eScopeEnd, "Operator");
       TOKEN_DESC(TokenKind::eReservedFunc, "Keyword");
       //      TOKEN_DESC(TokenKind::eReservedLet, "Keyword");
       //      TOKEN_DESC(TokenKind::eReservedIf, "Keyword");
@@ -135,10 +141,13 @@ typedef enum {
   eTokenKindSeparator,
   eTokenKindOperator,
   eTokenKindAccess,
+  eTokenKindAccessNamespace,
   eTokenKindLParens,
   eTokenKindMinus,
   eTokenKindArrow,
   eTokenKindPipe,
+  eTokenKindScopeBegin,
+  eTokenKindScopeEnd,
   eTokenKindReservedFunc,
   //  eTokenKindReservedLet,
   //  eTokenKindReservedIf,

@@ -1,12 +1,17 @@
 hello_world.clr
 
 
-[0] =      Keyword | open |
-[1] =   Identifier | IO |
-[2] =   Identifier | IO |
-[3] =     Operator | . |
-[4] =   Identifier | puts |
-[5] =     Operator | ( |
-[6] =       String | "Hello world!" |
-[7] =     Operator | ) |
+[0] =      Keyword | func |
+[1] =   Identifier | main |
+[2] =     Operator | ( |
+[3] =     Operator | ) |
+[4] =    Separator | { |
+[5] =   Identifier | std |
+[6] =     Operator | :: |
+[7] =   Identifier | puts |
+[8] =     Operator | ( |
+[9] =       String | "Hello, world!" |
+[10] =     Operator | ) |
+[11] =    Separator | ; |
+[12] =    Separator | } |
 

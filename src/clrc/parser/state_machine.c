@@ -25,12 +25,15 @@ uint16_t const ch_to_eqc[256] = {
   ['+']        = offset(Operator),
   ['-']        = offset(Hyphen),
   ['.']        = offset(Operator),
-  [':']        = offset(Separator),
+  [':']        = offset(Colon),
+  [';']        = offset(Separator),
   ['<']        = offset(Operator),
   ['=']        = offset(Operator),
   ['>']        = offset(Operator),
   ['\\']       = offset(Separator),
+  ['{']        = offset(Separator),
   ['|']        = offset(VerticalBar),
+  ['}']        = offset(Separator),
   // Numbers
   [48 ... 57]  = offset(Digit),
   // Letters
@@ -51,11 +54,14 @@ int const ch_reeval[256] = {
   ['-']        = -1,
   ['.']        = -1,
   [':']        = -1,
+  [';']        = -1,
   ['<']        = -1,
   ['=']        = -1,
   ['>']        = -1,
   ['\\']       = -1,
+  ['{']        = -1,
   ['|']        = -1,
+  ['}']        = -1,
   // Digits
   [48 ... 57]  = -1,
   // Letters
@@ -76,6 +82,7 @@ int const ch_reeval[256] = {
   [state(s) + offset(Digit)]       = state(Numeral),           \
   [state(s) + offset(Separator)]   = state(Separator),         \
   [state(s) + offset(Operator)]    = state(OperatorSingle),    \
+  [state(s) + offset(Colon)]       = state(OperatorMulti),     \
   [state(s) + offset(Hyphen)]      = state(OperatorMulti),     \
   [state(s) + offset(VerticalBar)] = state(OperatorMulti),     \
   [state(s) + offset(DoubleQuote)] = state(String)
@@ -104,6 +111,7 @@ uint8_t const lex_trans[offset(Count)] = {
   reduce(Identifier, Digit, Identifier),
   reduce(Identifier, Separator, IdentifierEnd),
   reduce(Identifier, Operator, IdentifierEnd),
+  reduce(Identifier, Colon, IdentifierEnd),
   reduce(Identifier, Hyphen, IdentifierEnd),
   reduce(Identifier, VerticalBar, IdentifierEnd),
   reduce(Identifier, DoubleQuote, IdentifierEnd),
@@ -115,6 +123,7 @@ uint8_t const lex_trans[offset(Count)] = {
   reduce(String, Digit, String),
   reduce(String, Separator, String),
   reduce(String, Operator, String),
+  reduce(String, Colon, String),
   reduce(String, Hyphen, String),
   reduce(String, VerticalBar, String),
   reduce(String, DoubleQuote, StringEnd),
@@ -127,6 +136,7 @@ uint8_t const lex_trans[offset(Count)] = {
   reduce(Numeral, Digit, Numeral),
   reduce(Numeral, Separator, NumeralEnd),
   reduce(Numeral, Operator, NumeralEnd),
+  reduce(Numeral, Colon, NumeralEnd),
   reduce(Numeral, Hyphen, NumeralEnd),
   reduce(Numeral, VerticalBar, NumeralEnd),
   reduce(Numeral, DoubleQuote, EOF),
@@ -138,6 +148,7 @@ uint8_t const lex_trans[offset(Count)] = {
   reduce(OperatorMulti, Digit, OperatorMultiEnd),
   reduce(OperatorMulti, Separator, OperatorMultiEnd),
   reduce(OperatorMulti, Operator, OperatorMulti),
+  reduce(OperatorMulti, Colon, OperatorMulti),
   reduce(OperatorMulti, Hyphen, Error),
   reduce(OperatorMulti, VerticalBar, Error),
   reduce(OperatorMulti, DoubleQuote, OperatorMultiEnd),

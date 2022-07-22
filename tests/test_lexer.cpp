@@ -7,24 +7,24 @@ int main() {
     Approvals::verifyAll("hello_world.clr", lexemes);
   };
 
-  "fib"_test = []() {
-    auto lexemes = claire::parser::Lexer{"../../examples/fib.clr"}.lex();
-    Approvals::verifyAll("fib.clr", lexemes);
-  };
-
-  "extern"_test = []() {
-    auto lexemes = claire::parser::Lexer{std::string{stdlib_path} + "io.clr"}.lex();
-    Approvals::verifyAll("io.clr", lexemes);
-  };
-
-  "exception"_test = []() {
-    std::string sources[]{
-      "unsupported_multi_operator.clr",
-    };
-
-    for (auto const &src : sources) {
-      auto lexer = claire::parser::Lexer{"../../tests/data/" + src};
-      expect(throws([&]() { lexer.lex(); }));
-    }
-  };
+//  "fib"_test = []() {
+//    auto lexemes = claire::parser::Lexer{"../../examples/fib.clr"}.lex();
+//    Approvals::verifyAll("fib.clr", lexemes);
+//  };
+//
+//  "extern"_test = []() {
+//    auto lexemes = claire::parser::Lexer{std::string{stdlib_path} + "io.clr"}.lex();
+//    Approvals::verifyAll("io.clr", lexemes);
+//  };
+//
+//  "exception"_test = []() {
+//    std::string sources[]{
+//      "unsupported_multi_operator.clr",
+//    };
+//
+//    for (auto const &src : sources) {
+//      auto lexer = claire::parser::Lexer{"../../tests/data/" + src};
+//      expect(throws([&]() { lexer.lex(); }));
+//    }
+//  };
 }
