@@ -27,13 +27,14 @@ namespace claire::parser {
     ePipe,
 
     // Reserved Keywords
-    eReservedLet,
-    eReservedIf,
-    eReservedElse,
-    eReservedOpen,
-    eReservedModule,
-    eReservedExport,
-    eReservedExtern,
+    eReservedFunc,
+    //    eReservedLet,
+    //    eReservedIf,
+    //    eReservedElse,
+    //    eReservedOpen,
+    //    eReservedModule,
+    //    eReservedExport,
+    //    eReservedExtern,
 
     // Builtin Types
     eTypeBinary,
@@ -105,13 +106,14 @@ namespace claire::parser {
       TOKEN_DESC(TokenKind::eMinus, "Operator");
       TOKEN_DESC(TokenKind::eArrow, "Operator");
       TOKEN_DESC(TokenKind::ePipe, "Operator");
-      TOKEN_DESC(TokenKind::eReservedLet, "Keyword");
-      TOKEN_DESC(TokenKind::eReservedIf, "Keyword");
-      TOKEN_DESC(TokenKind::eReservedElse, "Keyword");
-      TOKEN_DESC(TokenKind::eReservedOpen, "Keyword");
-      TOKEN_DESC(TokenKind::eReservedModule, "Keyword");
-      TOKEN_DESC(TokenKind::eReservedExport, "Keyword");
-      TOKEN_DESC(TokenKind::eReservedExtern, "Keyword");
+      TOKEN_DESC(TokenKind::eReservedFunc, "Keyword");
+      //      TOKEN_DESC(TokenKind::eReservedLet, "Keyword");
+      //      TOKEN_DESC(TokenKind::eReservedIf, "Keyword");
+      //      TOKEN_DESC(TokenKind::eReservedElse, "Keyword");
+      //      TOKEN_DESC(TokenKind::eReservedOpen, "Keyword");
+      //      TOKEN_DESC(TokenKind::eReservedModule, "Keyword");
+      //      TOKEN_DESC(TokenKind::eReservedExport, "Keyword");
+      //      TOKEN_DESC(TokenKind::eReservedExtern, "Keyword");
       TOKEN_DESC(TokenKind::eTypeBinary, "Type");
       TOKEN_DESC(TokenKind::eTypeU32, "Type");
     default:
@@ -137,13 +139,14 @@ typedef enum {
   eTokenKindMinus,
   eTokenKindArrow,
   eTokenKindPipe,
-  eTokenKindReservedLet,
-  eTokenKindReservedIf,
-  eTokenKindReservedElse,
-  eTokenKindReservedOpen,
-  eTokenKindReservedModule,
-  eTokenKindReservedExport,
-  eTokenKindReservedExtern,
+  eTokenKindReservedFunc,
+  //  eTokenKindReservedLet,
+  //  eTokenKindReservedIf,
+  //  eTokenKindReservedElse,
+  //  eTokenKindReservedOpen,
+  //  eTokenKindReservedModule,
+  //  eTokenKindReservedExport,
+  //  eTokenKindReservedExtern,
   eTokenKindTypeBinary,
   eTokenKindTypeU32,
   eTokenKindCount,

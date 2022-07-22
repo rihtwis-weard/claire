@@ -1,3 +1,3 @@
 # claire
 
-Simple and elegant functional programming language
+A powerful systems-oriented generic programming language.

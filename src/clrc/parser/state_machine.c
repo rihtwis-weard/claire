@@ -165,40 +165,40 @@ uint8_t const lex_inside[offset(Count)] = {
 // TODO(rihtwis-weard): can be simplified using a localized/scope-based transition table
 //                      since not all states are connected
 uint8_t const parse_trans[offset(Count)] = {
-  reduce(NewScope, Identifier, IdentifierExpr),
-  reduce(NewScope, ReservedOpen, ModuleOpenStmt),
-  reduce(NewScope, ReservedModule, ModuleDecl),
-  // TODO(rihtwis-weard): eventually enforce export visibility
-  reduce(NewScope, ReservedExport, NewScope),
-  reduce(NewScope, ReservedExtern, ExternDecl),
-
-  reduce(IdentifierExpr, Access, NewAccessExpr),
-
-  reduce(NewAccessExpr, Access, Error),
-  reduce(NewAccessExpr, Identifier, GrowAccessExpr),
-  reduce(NewAccessExpr, LParens, Error),
-
-  reduce(ContAccessExpr, Identifier, GrowAccessExpr),
-  reduce(ContAccessExpr, Access, Error),
-  reduce(ContAccessExpr, LParens, Error),
-
-  reduce(GrowAccessExpr, Access, ContAccessExpr),
-  reduce(GrowAccessExpr, Identifier, Error),
-  reduce(GrowAccessExpr, LParens, FunctionCallExpr),
-
-  reduce(FunctionCallExpr, StringLiteral, FunctionCallArgs),
-
-  reduce(ModuleOpenStmt, Identifier, IdentifierExpr),
-
-  reduce(ModuleDecl, Identifier, NewScope),
-
-  reduce(FunctionDeclArgs, Arrow, FunctionDeclReturnType),
-
-  reduce(ExternDecl, Identifier, ExternDeclName),
-  reduce(ExternDecl, Operator,
-    ExternDecl), // TODO(rihtwis-weard): more specifically, assignment operator
-  reduce(ExternDecl, StringLiteral, ExternDeclLinkageName),
-  reduce(ExternDeclName, Separator, FunctionDeclArgs),
+  //  reduce(NewScope, Identifier, IdentifierExpr),
+  //  reduce(NewScope, ReservedOpen, ModuleOpenStmt),
+  //  reduce(NewScope, ReservedModule, ModuleDecl),
+  //  // TODO(rihtwis-weard): eventually enforce export visibility
+  //  reduce(NewScope, ReservedExport, NewScope),
+  //  reduce(NewScope, ReservedExtern, ExternDecl),
+  //
+  //  reduce(IdentifierExpr, Access, NewAccessExpr),
+  //
+  //  reduce(NewAccessExpr, Access, Error),
+  //  reduce(NewAccessExpr, Identifier, GrowAccessExpr),
+  //  reduce(NewAccessExpr, LParens, Error),
+  //
+  //  reduce(ContAccessExpr, Identifier, GrowAccessExpr),
+  //  reduce(ContAccessExpr, Access, Error),
+  //  reduce(ContAccessExpr, LParens, Error),
+  //
+  //  reduce(GrowAccessExpr, Access, ContAccessExpr),
+  //  reduce(GrowAccessExpr, Identifier, Error),
+  //  reduce(GrowAccessExpr, LParens, FunctionCallExpr),
+  //
+  //  reduce(FunctionCallExpr, StringLiteral, FunctionCallArgs),
+  //
+  //  reduce(ModuleOpenStmt, Identifier, IdentifierExpr),
+  //
+  //  reduce(ModuleDecl, Identifier, NewScope),
+  //
+  //  reduce(FunctionDeclArgs, Arrow, FunctionDeclReturnType),
+  //
+  //  reduce(ExternDecl, Identifier, ExternDeclName),
+  //  reduce(ExternDecl, Operator,
+  //    ExternDecl), // TODO(rihtwis-weard): more specifically, assignment operator
+  //  reduce(ExternDecl, StringLiteral, ExternDeclLinkageName),
+  //  reduce(ExternDeclName, Separator, FunctionDeclArgs),
 };
 
 #pragma GCC diagnostic pop
