@@ -20,19 +20,22 @@ namespace claire::parser {
       : stdlib_path_{std::move(stdlib_path)} {
     }
 
-    template <typename ASTNodeType = ProgramDecl>
+    template <typename RootNodeType = ProgramDecl>
     std::unique_ptr<ASTNode> parse(
       std::vector<Token> const &tokens, std::string const &id = "main");
 
   private:
-    std::unique_ptr<Expr> parse_identifier_expr(
-      ParseState &state, std::vector<Token>::const_iterator tok);
+    std::unique_ptr<IdentifierExpr> parse_identifier_expr(
+      std::vector<Token>::const_iterator &tok);
 
     std::unique_ptr<Expr> parse_module_access_expr(
       std::vector<Token>::const_iterator tok, IdentifierExpr const &expr);
 
+    //    std::unique_ptr<Expr> parse_function_call_expr(
+    //      std::vector<Token>::const_iterator tok, std::unique_ptr<Expr> &&callee);
+
     std::unique_ptr<Expr> parse_function_call_expr(
-      std::vector<Token>::const_iterator tok, std::unique_ptr<Expr> &&callee);
+      std::vector<Token>::const_iterator &tok);
 
     std::unique_ptr<ASTNode> parse_module_open_stmt(ParseState &state,
       std::vector<Token>::const_iterator &tok, std::vector<Token> const &tokens);
@@ -40,7 +43,13 @@ namespace claire::parser {
     std::unique_ptr<ExternDecl> parse_extern_decl(ParseState &state,
       std::vector<Token>::const_iterator tok, std::vector<Token> const &tokens);
 
+    std::unique_ptr<FunctionDef> parse_function_def(
+      std::vector<Token>::const_iterator &tok);
+
     std::vector<FunctionArg> parse_function_decl_args(
+      std::vector<Token>::const_iterator &tok);
+
+    std::unique_ptr<FunctionBody> parse_function_body(
       std::vector<Token>::const_iterator &tok);
 
     static auto next_state(ParseState prev, Token const &token);

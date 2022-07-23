@@ -14,4 +14,9 @@ namespace claire {
     [[nodiscard]] char const *what() const noexcept override;
   };
 
+  class syntax_error : public std::exception {
+  public:
+    [[nodiscard]] char const *what() const noexcept override;
+  };
+
 } // namespace claire

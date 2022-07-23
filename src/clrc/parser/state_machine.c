@@ -31,9 +31,9 @@ uint16_t const ch_to_eqc[256] = {
   ['=']        = offset(Operator),
   ['>']        = offset(Operator),
   ['\\']       = offset(Separator),
-  ['{']        = offset(Separator),
+  ['{']        = offset(Operator),
   ['|']        = offset(VerticalBar),
-  ['}']        = offset(Separator),
+  ['}']        = offset(Operator),
   // Numbers
   [48 ... 57]  = offset(Digit),
   // Letters

@@ -10,4 +10,8 @@ namespace claire {
     return "Invalid lexeme";
   }
 
+  char const *syntax_error::what() const noexcept {
+    return "Syntax error";
+  }
+
 } // namespace claire

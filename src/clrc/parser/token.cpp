@@ -5,11 +5,12 @@ namespace claire::parser {
     // Operators
     {".", TokenKind::eAccess},
     {"(", TokenKind::eLParens},
+    {")", TokenKind::eRParens},
     {"-", TokenKind::eMinus},
     {"{", TokenKind::eScopeBegin},
     {"}", TokenKind::eScopeEnd},
     // Special Multi Operators
-    {"::", TokenKind::eAccess},
+    {"::", TokenKind::eAccessNamespace},
     {"->", TokenKind::eArrow},
     {"|>", TokenKind::ePipe},
     // Reserved Keywords

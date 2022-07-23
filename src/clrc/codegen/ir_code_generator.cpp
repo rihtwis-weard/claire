@@ -134,30 +134,31 @@ namespace claire::codegen {
     //                      or always/conditionally be inlined as AST?
 
     // TODO(rihtwis-weard): nested visitors vs. if statements for function callee resolution?
-    if (auto ma_expr = dynamic_cast<parser::ModuleAccessExpr const *>(expr->callee())) {
-      auto value = mod_fns_.at(ma_expr->module_name()).at(ma_expr->id());
-
-      std::vector<llvm::Value *> args;
-      for (auto const &child : expr->children()) {
-        if (auto arg = std::visit(*this, child->as_variant()); arg) {
-          args.push_back(arg);
-        } else {
-          std::cerr << "failed to create function arg!\n";
-          return nullptr;
-        }
-      }
-
-      if (auto callee = mod_.getFunction(value->getName())) {
-        return builder_.CreateCall(callee, args, "calltmp");
-      } else {
-        std::cerr << "unknown function referenced!\n";
-        return nullptr;
-      }
-
-    } else {
-      std::cerr << "function callee type is unsupported or unknown!\n";
-      return nullptr;
-    }
+    //    if (auto ma_expr = dynamic_cast<parser::ModuleAccessExpr const *>(expr->callee())) {
+    //      auto value = mod_fns_.at(ma_expr->module_name()).at(ma_expr->id());
+    //
+    //      std::vector<llvm::Value *> args;
+    //      for (auto const &child : expr->children()) {
+    //        if (auto arg = std::visit(*this, child->as_variant()); arg) {
+    //          args.push_back(arg);
+    //        } else {
+    //          std::cerr << "failed to create function arg!\n";
+    //          return nullptr;
+    //        }
+    //      }
+    //
+    //      if (auto callee = mod_.getFunction(value->getName())) {
+    //        return builder_.CreateCall(callee, args, "calltmp");
+    //      } else {
+    //        std::cerr << "unknown function referenced!\n";
+    //        return nullptr;
+    //      }
+    //
+    //    } else {
+    //      std::cerr << "function callee type is unsupported or unknown!\n";
+    //      return nullptr;
+    //    }
+    return nullptr;
   }
 
 } // namespace claire::codegen

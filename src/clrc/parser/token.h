@@ -22,6 +22,7 @@ namespace claire::parser {
     eAccess,
     eAccessNamespace,
     eLParens,
+    eRParens,
     eMinus,
     // Multi
     eArrow,
@@ -107,6 +108,7 @@ namespace claire::parser {
       TOKEN_DESC(TokenKind::eAccess, "Operator");
       TOKEN_DESC(TokenKind::eAccessNamespace, "Operator");
       TOKEN_DESC(TokenKind::eLParens, "Operator");
+      TOKEN_DESC(TokenKind::eRParens, "Operator");
       TOKEN_DESC(TokenKind::eMinus, "Operator");
       TOKEN_DESC(TokenKind::eArrow, "Operator");
       TOKEN_DESC(TokenKind::ePipe, "Operator");
@@ -143,6 +145,7 @@ typedef enum {
   eTokenKindAccess,
   eTokenKindAccessNamespace,
   eTokenKindLParens,
+  eTokenKindRParens,
   eTokenKindMinus,
   eTokenKindArrow,
   eTokenKindPipe,

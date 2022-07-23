@@ -55,7 +55,16 @@ namespace claire::parser {
     }
 
     std::string operator()(FunctionCallExpr const *expr) override {
-      return "FunctionCallExpr: " + std::visit(*this, expr->callee()->as_variant());
+      //      return "FunctionCallExpr: " + std::visit(*this, expr->callee()->as_variant());
+      return "FunctionCallExpr";
+    }
+
+    std::string operator()(FunctionDef const *decl) override {
+      return "FunctionDef: " + decl->id();
+    }
+
+    std::string operator()(FunctionBody const *decl) override {
+      return "FunctionBody";
     }
   };
 
