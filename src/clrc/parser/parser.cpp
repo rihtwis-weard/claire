@@ -5,6 +5,24 @@
 
 namespace claire::parser {
 
+  /// Parses a simple identifier expression
+  ///
+  /// letter = [A-Za-z]
+  /// digit = [0-9]
+  /// identifierExpr ::= letter , { letter | digit | '_' }
+  ///
+  /// \param tok
+  /// \return
+  std::unique_ptr<IdentifierExpr> parse_simple_identifier_expression(
+    token_iterator &tok) {
+    if (tok->kind == TokenKind::eIdentifier) {
+      return std::make_unique<IdentifierExpr>(tok->repr);
+    } else {
+      // TODO(rw): collect errors
+      throw syntax_error{"expected valid identifier, got: {}"};
+    }
+  }
+
   auto Parser::next_state(ParseState prev, Token const &token) {
     return static_cast<ParseState>(
       parse_trans[utype(prev) + (utype(token.kind) * utype(ParseState::eCount))]);

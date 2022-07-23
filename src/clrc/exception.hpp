@@ -1,6 +1,7 @@
 #pragma once
 
 #include <exception>
+#include <string>
 
 namespace claire {
 
@@ -15,7 +16,12 @@ namespace claire {
   };
 
   class syntax_error : public std::exception {
+    std::string message_;
+
   public:
+    explicit syntax_error();
+    explicit syntax_error(std::string message);
+
     [[nodiscard]] char const *what() const noexcept override;
   };
 

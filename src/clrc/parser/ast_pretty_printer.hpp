@@ -47,7 +47,7 @@ namespace claire::parser {
     }
 
     std::string operator()(IdentifierExpr const *expr) override {
-      return expr->id();
+      return "IdentifierExpr: " + expr->id();
     }
 
     std::string operator()(ModuleAccessExpr const *expr) override {

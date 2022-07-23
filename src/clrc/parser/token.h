@@ -19,16 +19,17 @@ namespace claire::parser {
     eOperator,
 
     // Special Operators
-    eAccess,
-    eAccessNamespace,
+    eAccessMember,
     eLParens,
     eRParens,
     eMinus,
-    // Multi
-    eArrow,
-    ePipe,
     eScopeBegin,
     eScopeEnd,
+
+    // Multi
+    eAccessNamespace,
+    eArrow,
+    ePipe,
 
     // Reserved Keywords
     eReservedFunc,
@@ -55,7 +56,7 @@ namespace claire::parser {
     std::size_t len;
 
     // Debugging metadata
-    std::string name;
+//    std::string name;
     std::size_t line_num = 1;
     std::size_t col_num  = 1;
 
@@ -105,15 +106,16 @@ namespace claire::parser {
       TOKEN_DESC(TokenKind::eNumeral, "Numeral");
       TOKEN_DESC(TokenKind::eSeparator, "Separator");
       TOKEN_DESC(TokenKind::eOperator, "Operator");
-      TOKEN_DESC(TokenKind::eAccess, "Operator");
-      TOKEN_DESC(TokenKind::eAccessNamespace, "Operator");
+      TOKEN_DESC(TokenKind::eAccessMember, "Operator");
       TOKEN_DESC(TokenKind::eLParens, "Operator");
       TOKEN_DESC(TokenKind::eRParens, "Operator");
       TOKEN_DESC(TokenKind::eMinus, "Operator");
-      TOKEN_DESC(TokenKind::eArrow, "Operator");
-      TOKEN_DESC(TokenKind::ePipe, "Operator");
       TOKEN_DESC(TokenKind::eScopeBegin, "Operator");
       TOKEN_DESC(TokenKind::eScopeEnd, "Operator");
+      TOKEN_DESC(TokenKind::eAccessNamespace, "Operator");
+      TOKEN_DESC(TokenKind::eArrow, "Operator");
+      TOKEN_DESC(TokenKind::ePipe, "Operator");
+
       TOKEN_DESC(TokenKind::eReservedFunc, "Keyword");
       //      TOKEN_DESC(TokenKind::eReservedLet, "Keyword");
       //      TOKEN_DESC(TokenKind::eReservedIf, "Keyword");
@@ -142,15 +144,15 @@ typedef enum {
   eTokenKindNumeral,
   eTokenKindSeparator,
   eTokenKindOperator,
-  eTokenKindAccess,
-  eTokenKindAccessNamespace,
+  eTokenKindAccessMember,
   eTokenKindLParens,
   eTokenKindRParens,
   eTokenKindMinus,
-  eTokenKindArrow,
-  eTokenKindPipe,
   eTokenKindScopeBegin,
   eTokenKindScopeEnd,
+  eTokenKindAccessNamespace,
+  eTokenKindArrow,
+  eTokenKindPipe,
   eTokenKindReservedFunc,
   //  eTokenKindReservedLet,
   //  eTokenKindReservedIf,

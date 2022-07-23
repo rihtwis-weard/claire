@@ -11,6 +11,10 @@
 
 namespace claire::parser {
 
+  using token_iterator = std::vector<Token>::const_iterator;
+
+  std::unique_ptr<IdentifierExpr> parse_simple_identifier_expression(token_iterator &tok);
+
   class Parser {
     std::string stdlib_path_;
     //    robin_hood::unordered_map<std::string, ASTNode *> mod_map_;

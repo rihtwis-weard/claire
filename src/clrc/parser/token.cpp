@@ -3,7 +3,7 @@
 namespace claire::parser {
   robin_hood::unordered_map<std::string, TokenKind> const token_map = {
     // Operators
-    {".", TokenKind::eAccess},
+    {".", TokenKind::eAccessMember},
     {"(", TokenKind::eLParens},
     {")", TokenKind::eRParens},
     {"-", TokenKind::eMinus},

@@ -207,6 +207,10 @@ namespace claire::parser {
     explicit IdentifierExpr(std::string id)
       : ASTNode{std::move(id)} {
     }
+
+    [[nodiscard]] ASTNodeVariant as_variant() const override {
+      return this;
+    }
   };
 
   class ModuleAccessExpr : public Expr {

@@ -1,14 +1,23 @@
 #include "fixtures.hpp"
 #include "parser/ast_pretty_printer.hpp"
-#include "parser/lexer.hpp"
 #include "parser/parser.hpp"
+#include "parser/token.h"
 
 int main() {
-  "hello_world"_test = []() {
-    auto lexemes = claire::parser::Lexer{"../../examples/hello_world.clr"}.lex();
-    auto ast     = claire::parser::Parser{stdlib_path}.parse(lexemes);
 
-    auto ast_pp = claire::parser::ASTPrettyPrinter{};
-    Approvals::verify(ast_pp.pretty_print(ast.get()));
+  "simple_identifier"_test = []() {
+    auto pp = claire::parser::ASTPrettyPrinter{};
+
+    std::vector<claire::parser::Token> const tokens{
+      {
+        .kind = claire::parser::TokenKind::eIdentifier,
+        .repr = "my_variable",
+        .len  = 11,
+      },
+    };
+
+    auto it   = tokens.begin();
+    auto node = claire::parser::parse_simple_identifier_expression(it);
+    Approvals::verify(pp.pretty_print(node.get()));
   };
 }
