@@ -30,7 +30,7 @@ namespace claire::parser {
   std::unique_ptr<IdentifierSeq> parse_identifier_sequence(token_iterator &tok);
 
   std::unique_ptr<FunctionCallExpr> parse_function_call_expression(
-    token_iterator &tok, std::unique_ptr<Expr> &&callee);
+    parse_context &ctx, std::unique_ptr<Expr> &&callee);
 
   std::unique_ptr<ExpressionSequence> parse_expression_sequence(parse_context &ctx);
 

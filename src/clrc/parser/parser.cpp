@@ -59,27 +59,32 @@ namespace claire::parser {
   /// expressionSequence ::= empty | nonEmptyExpressionSequence
   /// functionCallExpr ::= identifierExpr '(' expressionSequence ')'
   ///
-  /// \param tok
+  /// \param ctx
   /// \param callee
   /// \return
   std::unique_ptr<FunctionCallExpr> parse_function_call_expression(
-    token_iterator &tok, std::unique_ptr<Expr> &&callee) {
+    parse_context &ctx, std::unique_ptr<Expr> &&callee) {
     auto call = std::make_unique<FunctionCallExpr>(std::move(callee));
-    tok       = std::next(tok);
+    // TODO(rw): create a consume func that can also assert token kind
+    //           maybe also a peek func via yield copy of token, suspend, and resume?
 
-    FunctionArg args{};
-
-    for (; tok->kind != TokenKind::eRParens; ++tok) {
-      // TODO(rw): parse each expression between ',' separator
+    // eat left parens
+    ctx.tok  = std::next(ctx.tok);
+    auto seq = parse_expression_sequence(ctx);
+    if (not seq->children().empty()) {
+      call->add(std::move(seq));
     }
-
+    // eat right parens
+    ctx.tok = std::next(ctx.tok);
     return call;
   }
 
   std::unique_ptr<ExpressionSequence> parse_expression_sequence(parse_context &ctx) {
     auto seq = std::make_unique<ExpressionSequence>();
     // TODO(rw): reserve ',' as expression separator
-    for (; ctx.tok != ctx.tokens.end() and ctx.tok->kind != TokenKind::eSeparator;
+    // TODO(rw): better TokenKind checks
+    for (; ctx.tok != ctx.tokens.end() and ctx.tok->kind != TokenKind::eSeparator and
+           ctx.tok->kind != TokenKind::eRParens;
          ++ctx.tok) {
       // TODO(rw): generic parse_expr, stubbed as parse_identifier_expr for now
       seq->add(std::make_unique<IdentifierExpr>(ctx.tok->repr));

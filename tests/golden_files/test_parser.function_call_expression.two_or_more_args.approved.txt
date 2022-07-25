@@ -1,0 +1,5 @@
+└──FunctionCallExpr: my_product
+	└──ExpressionSequence
+		└──IdentifierExpr: a
+		└──IdentifierExpr: b
+
