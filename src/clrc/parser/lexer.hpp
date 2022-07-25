@@ -16,7 +16,7 @@ namespace claire::parser {
   public:
     explicit Lexer(std::string const &fpath);
 
-    std::vector<Token> lex();
+    std::vector<Token> tokenize();
   };
 
 } // namespace claire::parser

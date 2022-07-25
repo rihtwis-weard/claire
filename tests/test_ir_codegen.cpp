@@ -6,7 +6,7 @@
 int main() {
   "hello_world"_test = []() {
     constexpr auto source_fname = "../../examples/hello_world.clr";
-    auto           lexemes      = claire::parser::Lexer{source_fname}.lex();
+    auto           lexemes      = claire::parser::Lexer{source_fname}.tokenize();
     auto           ast          = claire::parser::Parser{stdlib_path}.parse(lexemes);
 
     std::unique_ptr<claire::codegen::IRCodeGenerator> code_generator =
