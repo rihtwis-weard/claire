@@ -13,9 +13,26 @@ namespace claire::parser {
 
   using token_iterator = std::vector<Token>::const_iterator;
 
+  struct parse_context {
+    std::vector<Token> const &tokens;
+
+    token_iterator tok;
+
+  public:
+    explicit parse_context(std::vector<Token> const &tokens)
+      : tokens{tokens}
+      , tok{tokens.begin()} {
+    }
+  };
+
   std::unique_ptr<IdentifierExpr> parse_simple_identifier_expression(token_iterator &tok);
 
   std::unique_ptr<IdentifierSeq> parse_identifier_sequence(token_iterator &tok);
+
+  std::unique_ptr<FunctionCallExpr> parse_function_call_expression(
+    parse_context &ctx, std::unique_ptr<Expr> &&callee);
+
+  std::unique_ptr<ExpressionSequence> parse_expression_sequence(parse_context &ctx);
 
   class Parser {
     std::string stdlib_path_;
@@ -31,17 +48,9 @@ namespace claire::parser {
       std::vector<Token> const &tokens, std::string const &id = "main");
 
   private:
-    std::unique_ptr<IdentifierExpr> parse_identifier_expr(
-      std::vector<Token>::const_iterator &tok);
-    //
     //    std::unique_ptr<Expr> parse_module_access_expr(
     //      std::vector<Token>::const_iterator tok, IdentifierExpr const &expr);
 
-    //    std::unique_ptr<Expr> parse_function_call_expr(
-    //      std::vector<Token>::const_iterator tok, std::unique_ptr<Expr> &&callee);
-
-    std::unique_ptr<Expr> parse_function_call_expr(
-      std::vector<Token>::const_iterator &tok);
     //
     //    std::unique_ptr<ASTNode> parse_module_open_stmt(ParseState &state,
     //      std::vector<Token>::const_iterator &tok, std::vector<Token> const &tokens);
@@ -50,9 +59,6 @@ namespace claire::parser {
     //      std::vector<Token>::const_iterator tok, std::vector<Token> const &tokens);
 
     std::unique_ptr<FunctionDef> parse_function_def(
-      std::vector<Token>::const_iterator &tok);
-
-    std::vector<FunctionArg> parse_function_decl_args(
       std::vector<Token>::const_iterator &tok);
 
     std::unique_ptr<FunctionBody> parse_function_body(

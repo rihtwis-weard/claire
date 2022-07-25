@@ -1,0 +1,5 @@
+└──ExpressionSequence
+	└──IdentifierExpr: a
+	└──IdentifierExpr: b
+	└──IdentifierExpr: c
+

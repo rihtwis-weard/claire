@@ -17,6 +17,7 @@ namespace claire::parser {
   template <typename R>
   class ASTVisitor;
 
+  // TODO(rw): clean this shit up
   class ASTNode;
   class ProgramDecl;
   class IdentifierExpr;
@@ -28,13 +29,14 @@ namespace claire::parser {
   class FunctionDef;
   class IdentifierSeq;
   class NamespaceAccessExpr;
+  class ExpressionSequence;
 
   // TODO(rihwis-weard): can use custom visitor pattern instead of `std::visit` and `std::variant`
   //                     and use virtual dispatch
   using ASTNodeVariant = std::variant<ASTNode const *, StringExpr const *,
     IdentifierExpr const *, FunctionCallExpr const *, ProgramDecl const *,
     ModuleDecl const *, ExternDecl const *, ModuleAccessExpr const *, FunctionDef const *,
-    IdentifierSeq const *, NamespaceAccessExpr const *>;
+    IdentifierSeq const *, NamespaceAccessExpr const *, ExpressionSequence const *>;
 
   class ASTNode {
   protected:
@@ -260,30 +262,35 @@ namespace claire::parser {
   };
 
   class FunctionCallExpr : public Expr {
-    //    std::unique_ptr<Expr> callee_;
+    std::unique_ptr<Expr> callee_;
 
   public:
-    //    explicit FunctionCallExpr(std::unique_ptr<Expr> &&callee)
-    //      : callee_{std::move(callee)} {
-    //    }
-
-    explicit FunctionCallExpr() {
+    explicit FunctionCallExpr(std::unique_ptr<Expr> &&callee)
+      : callee_{std::move(callee)} {
     }
 
     [[nodiscard]] ASTNodeVariant as_variant() const override {
       return this;
     }
 
-    //    [[nodiscard]] Expr const *callee() const {
-    //      return callee_.get();
-    //    }
+    [[nodiscard]] Expr const *callee() const {
+      return callee_.get();
+    }
+  };
+
+  class ExpressionSequence : public ASTNode {
+  public:
+    [[nodiscard]] ASTNodeVariant as_variant() const override {
+      return this;
+    }
   };
 
   template <typename R = llvm::Value *>
   class ASTVisitor
+    // TODO(rw): clean this shit up
     : public Visitor<R, ASTNode, ProgramDecl, StringExpr, IdentifierExpr,
         FunctionCallExpr, ModuleDecl, ExternDecl, ModuleAccessExpr, FunctionDef,
-        FunctionBody, IdentifierSeq, NamespaceAccessExpr> {
+        FunctionBody, IdentifierSeq, NamespaceAccessExpr, ExpressionSequence> {
 
   public:
     R operator()(ASTNode const *) override {
