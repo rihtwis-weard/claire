@@ -4,47 +4,45 @@
 #include "parser/token.h"
 
 int main() {
+  using namespace claire::parser;
 
   "simple_identifier"_test = []() {
-    auto pp = claire::parser::ASTPrettyPrinter{};
+    auto pp = ASTPrettyPrinter{};
 
-    std::vector<claire::parser::Token> const tokens{
-      {
-        .kind = claire::parser::TokenKind::eIdentifier,
-        .repr = "my_variable",
-        .len  = 11,
-      },
+    std::vector<Token> const tokens{
+      {TokenKind::eIdentifier, "my_variable"},
     };
 
     auto it   = tokens.begin();
-    auto node = claire::parser::parse_simple_identifier_expression(it);
+    auto node = parse_simple_identifier_expression(it);
     Approvals::verify(pp.pretty_print(node.get()));
   };
 
   "identifier_sequence.access_namespace"_test = []() {
-    auto pp = claire::parser::ASTPrettyPrinter{};
+    auto pp = ASTPrettyPrinter{};
 
-    std::vector<claire::parser::Token> const tokens{
-      {
-        .kind = claire::parser::TokenKind::eIdentifier,
-        .repr = "my_namespace",
-        .len  = 12,
-      },
-      {
-        .kind = claire::parser::TokenKind::eAccessNamespace,
-        .repr = "::",
-        .len  = 2,
-      },
-
-      {
-        .kind = claire::parser::TokenKind::eIdentifier,
-        .repr = "my_func",
-        .len  = 7,
-      },
+    std::vector<Token> const tokens{
+      {TokenKind::eIdentifier, "my_namespace"},
+      {TokenKind::eAccessNamespace, "::"},
+      {TokenKind::eIdentifier, "my_func"},
     };
 
     auto it   = tokens.begin();
-    auto node = claire::parser::parse_identifier_sequence(it);
+    auto node = parse_identifier_sequence(it);
+    Approvals::verify(pp.pretty_print(node.get()));
+  };
+
+  "function_call_expression.no_args"_test = []() {
+    auto pp = ASTPrettyPrinter{};
+
+    std::vector<Token> const tokens{
+      {.kind = TokenKind::eLParens, .repr = "("},
+      {.kind = TokenKind::eRParens, .repr = ")"},
+    };
+
+    auto it     = tokens.begin();
+    auto callee = std::make_unique<IdentifierExpr>("my_func");
+    auto node   = parse_function_call_expression(it, std::move(callee));
     Approvals::verify(pp.pretty_print(node.get()));
   };
 }

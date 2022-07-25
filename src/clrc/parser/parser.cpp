@@ -53,6 +53,28 @@ namespace claire::parser {
     return seq;
   }
 
+  /// Parses a function call expression
+  ///
+  /// functionArg ::= Expr
+  /// functionCallExpr ::= identifierExpr '(' functionArg* (',' functionArg)* ')'
+  ///
+  /// \param tok
+  /// \param callee
+  /// \return
+  std::unique_ptr<FunctionCallExpr> parse_function_call_expression(
+    token_iterator &tok, std::unique_ptr<Expr> &&callee) {
+    auto call = std::make_unique<FunctionCallExpr>(std::move(callee));
+    tok       = std::next(tok);
+
+    FunctionArg args{};
+
+    for (; tok->kind != TokenKind::eRParens; ++tok) {
+      // TODO(rw): parse each expression between ',' separator
+    }
+
+    return call;
+  }
+
   template <typename RootNodeType>
   std::unique_ptr<ASTNode> Parser::parse(
     std::vector<Token> const &tokens, std::string const &id) {
@@ -60,9 +82,9 @@ namespace claire::parser {
     auto token = tokens.begin();
 
     switch (token->kind) {
-    case TokenKind::eReservedFunc:
-      root->add(parse_function_def(token));
-      break;
+      //    case TokenKind::eReservedFunc:
+      //      root->add(parse_function_def(token));
+      //      break;
     default:
       break;
     }
@@ -70,48 +92,48 @@ namespace claire::parser {
     return root;
   }
 
-  std::unique_ptr<FunctionDef> Parser::parse_function_def(
-    std::vector<Token>::const_iterator &tok) {
-    tok              = std::next(tok);
-    auto id          = tok->repr;
-    auto symbol_name = std::make_unique<IdentifierExpr>(tok->repr);
+  //  std::unique_ptr<FunctionDef> Parser::parse_function_def(
+  //    std::vector<Token>::const_iterator &tok) {
+  //    tok              = std::next(tok);
+  //    auto id          = tok->repr;
+  //    auto symbol_name = std::make_unique<IdentifierExpr>(tok->repr);
+  //
+  //    tok       = std::next(tok);
+  //    auto args = parse_function_decl_args(tok);
+  //
+  //    // TODO(rw): parse return type decl
+  //
+  //    tok = std::next(tok);
+  //    if (tok->kind == TokenKind::eScopeBegin) {
+  //      auto body = parse_function_body(tok);
+  //      return std::make_unique<FunctionDef>(
+  //        id, std::move(symbol_name), std::move(args), std::move(body));
+  //    } else {
+  //      // TODO(rw): parse semicolon for func decl
+  //      throw syntax_error{};
+  //    }
+  //  }
 
-    tok       = std::next(tok);
-    auto args = parse_function_decl_args(tok);
-
-    // TODO(rw): parse return type decl
-
-    tok = std::next(tok);
-    if (tok->kind == TokenKind::eScopeBegin) {
-      auto body = parse_function_body(tok);
-      return std::make_unique<FunctionDef>(
-        id, std::move(symbol_name), std::move(args), std::move(body));
-    } else {
-      // TODO(rw): parse semicolon for func decl
-      throw syntax_error{};
-    }
-  }
-
-  std::unique_ptr<FunctionBody> Parser::parse_function_body(
-    std::vector<Token>::const_iterator &tok) {
-    tok       = std::next(tok);
-    auto body = std::make_unique<FunctionBody>();
-
-    for (; tok->kind != TokenKind::eScopeEnd;) {
-      switch (tok->kind) {
-      case TokenKind::eIdentifier:
-        body->add(parse_identifier_expr(tok));
-        break;
-      case TokenKind::eLParens:
-        body->add(parse_function_call_expr(tok));
-        break;
-      default:
-        throw syntax_error{};
-      }
-    }
-
-    return body;
-  }
+  //  std::unique_ptr<FunctionBody> Parser::parse_function_body(
+  //    std::vector<Token>::const_iterator &tok) {
+  //    tok       = std::next(tok);
+  //    auto body = std::make_unique<FunctionBody>();
+  //
+  //    for (; tok->kind != TokenKind::eScopeEnd;) {
+  //      switch (tok->kind) {
+  //      case TokenKind::eIdentifier:
+  //        body->add(parse_identifier_expr(tok));
+  //        break;
+  //      case TokenKind::eLParens:
+  //        body->add(parse_function_call_expr(tok));
+  //        break;
+  //      default:
+  //        throw syntax_error{};
+  //      }
+  //    }
+  //
+  //    return body;
+  //  }
 
   std::unique_ptr<IdentifierExpr> Parser::parse_identifier_expr(
     std::vector<Token>::const_iterator &tok) {
@@ -218,25 +240,6 @@ namespace claire::parser {
   //    }
   //    return node;
   //  }
-
-  std::unique_ptr<Expr> Parser::parse_function_call_expr(
-    std::vector<Token>::const_iterator &tok) {
-    auto node = std::make_unique<FunctionCallExpr>();
-
-    // TODO(rw): distinguish right parens and separator
-    for (; tok->kind != TokenKind::eSeparator; ++tok) {
-      switch (tok->kind) {
-        // TODO(rihwis-weard): don't hardcode type / values
-      case TokenKind::eStringLiteral:
-        node->add(std::make_unique<StringExpr>(tok->repr));
-        break;
-      default:
-        break;
-      }
-    }
-
-    return node;
-  }
 
   //  std::unique_ptr<Expr> Parser::parse_function_call_expr(
   //    std::vector<Token>::const_iterator tok, std::unique_ptr<Expr> &&callee) {

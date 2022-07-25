@@ -17,6 +17,9 @@ namespace claire::parser {
 
   std::unique_ptr<IdentifierSeq> parse_identifier_sequence(token_iterator &tok);
 
+  std::unique_ptr<FunctionCallExpr> parse_function_call_expression(
+    token_iterator &tok, std::unique_ptr<Expr> &&callee);
+
   class Parser {
     std::string stdlib_path_;
     //    robin_hood::unordered_map<std::string, ASTNode *> mod_map_;
@@ -40,8 +43,6 @@ namespace claire::parser {
     //    std::unique_ptr<Expr> parse_function_call_expr(
     //      std::vector<Token>::const_iterator tok, std::unique_ptr<Expr> &&callee);
 
-    std::unique_ptr<Expr> parse_function_call_expr(
-      std::vector<Token>::const_iterator &tok);
     //
     //    std::unique_ptr<ASTNode> parse_module_open_stmt(ParseState &state,
     //      std::vector<Token>::const_iterator &tok, std::vector<Token> const &tokens);

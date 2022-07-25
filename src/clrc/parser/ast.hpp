@@ -260,23 +260,20 @@ namespace claire::parser {
   };
 
   class FunctionCallExpr : public Expr {
-    //    std::unique_ptr<Expr> callee_;
+    std::unique_ptr<Expr> callee_;
 
   public:
-    //    explicit FunctionCallExpr(std::unique_ptr<Expr> &&callee)
-    //      : callee_{std::move(callee)} {
-    //    }
-
-    explicit FunctionCallExpr() {
+    explicit FunctionCallExpr(std::unique_ptr<Expr> &&callee)
+      : callee_{std::move(callee)} {
     }
 
     [[nodiscard]] ASTNodeVariant as_variant() const override {
       return this;
     }
 
-    //    [[nodiscard]] Expr const *callee() const {
-    //      return callee_.get();
-    //    }
+    [[nodiscard]] Expr const *callee() const {
+      return callee_.get();
+    }
   };
 
   template <typename R = llvm::Value *>
