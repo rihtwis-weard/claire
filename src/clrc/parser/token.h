@@ -110,8 +110,8 @@ namespace claire::parser {
       TOKEN_DESC(TokenKind::eLParens, "Operator");
       TOKEN_DESC(TokenKind::eRParens, "Operator");
       TOKEN_DESC(TokenKind::eMinus, "Operator");
-      TOKEN_DESC(TokenKind::eScopeBegin, "Operator");
-      TOKEN_DESC(TokenKind::eScopeEnd, "Operator");
+      TOKEN_DESC(TokenKind::eScopeBegin, "Separator");
+      TOKEN_DESC(TokenKind::eScopeEnd, "Separator");
       TOKEN_DESC(TokenKind::eAccessNamespace, "Operator");
       TOKEN_DESC(TokenKind::eArrow, "Operator");
       TOKEN_DESC(TokenKind::ePipe, "Operator");
