@@ -28,6 +28,8 @@ namespace claire::codegen {
   public:
     explicit IRCodeGenerator(std::string const &source_fname);
 
+    virtual ~IRCodeGenerator() = default;
+
     using ASTVisitor::operator();
 
     std::string dumps() const;

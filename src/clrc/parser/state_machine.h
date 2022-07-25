@@ -17,6 +17,7 @@ namespace claire::parser {
     eDigit,
     eSeparator,
     eOperator,
+    eColon,
     eHyphen,
     eVerticalBar,
     eDoubleQuote,
@@ -44,26 +45,6 @@ namespace claire::parser {
     eCount,
   };
 
-  enum class ParseState {
-    eFinal,
-    eNewScope,
-    eIdentifierExpr,
-    eNewAccessExpr,
-    eContAccessExpr,
-    eGrowAccessExpr,
-    eFunctionCallExpr,
-    eFunctionCallArgs,
-    eFunctionDeclArgs,
-    eFunctionDeclReturnType,
-    eModuleOpenStmt,
-    eModuleDecl,
-    eExternDecl,
-    eExternDeclName,
-    eExternDeclLinkageName,
-    eError,
-    eCount,
-  };
-
   // Character equivalence classes
   extern "C" std::uint16_t const ch_to_eqc[256];
   // Character re-evaluations
@@ -87,9 +68,6 @@ namespace claire::parser {
     return utype(curr) <= utype(LexicalState::eFinal);
   }
 
-  extern "C" std::uint8_t const
-    parse_trans[utype(ParseState::eCount) * utype(LexicalState::eCount)];
-
 } // namespace claire::parser
 
 #else
@@ -105,6 +83,7 @@ typedef enum {
   eGlyphDigit,
   eGlyphSeparator,
   eGlyphOperator,
+  eGlyphColon,
   eGlyphHyphen,
   eGlyphVerticalBar,
   eGlyphDoubleQuote,
@@ -131,25 +110,5 @@ typedef enum {
   eLexicalStateError,
   eLexicalStateCount,
 } LexicalState;
-
-typedef enum {
-  eParseStateFinal,
-  eParseStateNewScope,
-  eParseStateIdentifierExpr,
-  eParseStateNewAccessExpr,
-  eParseStateContAccessExpr,
-  eParseStateGrowAccessExpr,
-  eParseStateFunctionCallExpr,
-  eParseStateFunctionCallArgs,
-  eParseStateFunctionDeclArgs,
-  eParseStateFunctionDeclReturnType,
-  eParseStateModuleOpenStmt,
-  eParseStateModuleDecl,
-  eParseStateExternDecl,
-  eParseStateExternDeclName,
-  eParseStateExternDeclLinkageName,
-  eParseStateError,
-  eParseStateCount,
-} ParseState;
 
 #endif

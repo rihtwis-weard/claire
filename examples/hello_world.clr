@@ -1,3 +1,3 @@
-open IO
-
-IO.puts("Hello world!")
+func main() {
+  std::puts("Hello, world!");
+}

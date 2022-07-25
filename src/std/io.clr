@@ -1,0 +1,5 @@
+namespace std {
+  extern {
+    func puts(char const *) -> int;
+  }
+}

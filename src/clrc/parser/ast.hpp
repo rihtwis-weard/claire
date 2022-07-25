@@ -25,12 +25,16 @@ namespace claire::parser {
   class ModuleDecl;
   class ExternDecl;
   class ModuleAccessExpr;
+  class FunctionDef;
+  class IdentifierSeq;
+  class NamespaceAccessExpr;
 
   // TODO(rihwis-weard): can use custom visitor pattern instead of `std::visit` and `std::variant`
   //                     and use virtual dispatch
   using ASTNodeVariant = std::variant<ASTNode const *, StringExpr const *,
     IdentifierExpr const *, FunctionCallExpr const *, ProgramDecl const *,
-    ModuleDecl const *, ExternDecl const *, ModuleAccessExpr const *>;
+    ModuleDecl const *, ExternDecl const *, ModuleAccessExpr const *, FunctionDef const *,
+    IdentifierSeq const *, NamespaceAccessExpr const *>;
 
   class ASTNode {
   protected:
@@ -123,6 +127,36 @@ namespace claire::parser {
     std::string type;
   };
 
+  class FunctionBody : public Decl {
+  public:
+    FunctionBody()
+      : ASTNode{} {
+    }
+
+    [[nodiscard]] ASTNodeVariant as_variant() const override {
+      return this;
+    }
+  };
+
+  class FunctionDef : public Decl {
+    std::unique_ptr<IdentifierExpr> name_;
+    std::vector<FunctionArg>        args_;
+
+  public:
+    FunctionDef(std::string id, std::unique_ptr<IdentifierExpr> &&name,
+      std::vector<FunctionArg> &&args, std::unique_ptr<ASTNode> &&body)
+      : ASTNode{std::move(id)}
+      , name_{std::move(name)}
+      , args_{std::move(args)} {
+
+      add(std::move(body));
+    }
+
+    [[nodiscard]] ASTNodeVariant as_variant() const override {
+      return this;
+    }
+  };
+
   class StringExpr : public Expr {
   public:
     explicit StringExpr(std::string id)
@@ -175,6 +209,31 @@ namespace claire::parser {
     explicit IdentifierExpr(std::string id)
       : ASTNode{std::move(id)} {
     }
+
+    [[nodiscard]] ASTNodeVariant as_variant() const override {
+      return this;
+    }
+  };
+
+  class IdentifierSeq : public Expr {
+  public:
+    [[nodiscard]] ASTNodeVariant as_variant() const override {
+      return this;
+    }
+  };
+
+  class NamespaceAccessExpr : public Expr {
+    std::unique_ptr<IdentifierExpr> base_;
+
+  public:
+    explicit NamespaceAccessExpr(std::unique_ptr<IdentifierExpr> &&base)
+      : ASTNode(base->id())
+      , base_{std::move(base)} {
+    }
+
+    [[nodiscard]] ASTNodeVariant as_variant() const override {
+      return this;
+    }
   };
 
   class ModuleAccessExpr : public Expr {
@@ -201,26 +260,30 @@ namespace claire::parser {
   };
 
   class FunctionCallExpr : public Expr {
-    std::unique_ptr<Expr> callee_;
+    //    std::unique_ptr<Expr> callee_;
 
   public:
-    explicit FunctionCallExpr(std::unique_ptr<Expr> &&callee)
-      : callee_{std::move(callee)} {
+    //    explicit FunctionCallExpr(std::unique_ptr<Expr> &&callee)
+    //      : callee_{std::move(callee)} {
+    //    }
+
+    explicit FunctionCallExpr() {
     }
 
     [[nodiscard]] ASTNodeVariant as_variant() const override {
       return this;
     }
 
-    [[nodiscard]] Expr const *callee() const {
-      return callee_.get();
-    }
+    //    [[nodiscard]] Expr const *callee() const {
+    //      return callee_.get();
+    //    }
   };
 
   template <typename R = llvm::Value *>
   class ASTVisitor
     : public Visitor<R, ASTNode, ProgramDecl, StringExpr, IdentifierExpr,
-        FunctionCallExpr, ModuleDecl, ExternDecl, ModuleAccessExpr> {
+        FunctionCallExpr, ModuleDecl, ExternDecl, ModuleAccessExpr, FunctionDef,
+        FunctionBody, IdentifierSeq, NamespaceAccessExpr> {
 
   public:
     R operator()(ASTNode const *) override {

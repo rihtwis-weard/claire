@@ -47,7 +47,7 @@ namespace claire::parser {
     }
 
     std::string operator()(IdentifierExpr const *expr) override {
-      return expr->id();
+      return "IdentifierExpr: " + expr->id();
     }
 
     std::string operator()(ModuleAccessExpr const *expr) override {
@@ -55,7 +55,24 @@ namespace claire::parser {
     }
 
     std::string operator()(FunctionCallExpr const *expr) override {
-      return "FunctionCallExpr: " + std::visit(*this, expr->callee()->as_variant());
+      //      return "FunctionCallExpr: " + std::visit(*this, expr->callee()->as_variant());
+      return "FunctionCallExpr";
+    }
+
+    std::string operator()(FunctionDef const *decl) override {
+      return "FunctionDef: " + decl->id();
+    }
+
+    std::string operator()(FunctionBody const *decl) override {
+      return "FunctionBody";
+    }
+
+    std::string operator()(IdentifierSeq const *seq) override {
+      return "IdentifierSequence";
+    }
+
+    std::string operator()(NamespaceAccessExpr const *expr) override {
+      return "NamespaceAccessExpr: " + expr->id();
     }
   };
 

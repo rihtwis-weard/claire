@@ -1,0 +1,4 @@
+└──IdentifierSequence
+	└──NamespaceAccessExpr: my_namespace
+		└──IdentifierExpr: my_func
+

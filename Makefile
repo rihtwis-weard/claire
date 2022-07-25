@@ -12,5 +12,5 @@ dev-build:
 	DOCKER_BUILDKIT=1 docker build -t claire/remote-cpp-env:0.1.0 -f .devcontainer/Dockerfile.clion .
 
 dev-up:
-	DOCKER_BUILDKIT=1 docker-compose --project-name claire
+	DOCKER_BUILDKIT=1 docker-compose --project-name claire \
 		--file .devcontainer/docker-compose.clion.yml up --force-recreate --build --detach
