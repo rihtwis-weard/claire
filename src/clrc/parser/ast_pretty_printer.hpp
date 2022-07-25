@@ -66,6 +66,14 @@ namespace claire::parser {
     std::string operator()(FunctionBody const *decl) override {
       return "FunctionBody";
     }
+
+    std::string operator()(IdentifierSeq const *seq) override {
+      return "IdentifierSequence";
+    }
+
+    std::string operator()(NamespaceAccessExpr const *expr) override {
+      return "NamespaceAccessExpr: " + expr->id();
+    }
   };
 
 } // namespace claire::parser

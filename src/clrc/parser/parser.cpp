@@ -7,9 +7,9 @@ namespace claire::parser {
 
   /// Parses a simple identifier expression
   ///
-  /// letter = [A-Za-z]
-  /// digit = [0-9]
-  /// identifierExpr ::= letter , { letter | digit | '_' }
+  /// letter ::= [A-Za-z]
+  /// digit ::= [0-9]
+  /// identifierExpr ::= letter ( letter | digit | '_' )
   ///
   /// \param tok
   /// \return
@@ -23,9 +23,34 @@ namespace claire::parser {
     }
   }
 
-  auto Parser::next_state(ParseState prev, Token const &token) {
-    return static_cast<ParseState>(
-      parse_trans[utype(prev) + (utype(token.kind) * utype(ParseState::eCount))]);
+  /// Parses an identifier sequence
+  ///
+  /// accessNamespace ::= "::" identifierExpr
+  /// accessMember ::= '.' identifierExpr
+  /// identifierSeq ::= identifierExpr accessNamespace* accessMember*
+  ///
+  /// \param tok
+  /// \return
+  std::unique_ptr<IdentifierSeq> parse_identifier_sequence(token_iterator &tok) {
+    auto seq   = std::make_unique<IdentifierSeq>();
+    auto ident = parse_simple_identifier_expression(tok);
+    //    seq->add(parse_simple_identifier_expression(tok));
+
+    tok     = std::next(tok);
+    auto ns = std::make_unique<NamespaceAccessExpr>(std::move(ident));
+    for (; tok->kind == TokenKind::eAccessNamespace; ++tok) {
+      tok = std::next(tok);
+      ns->add(parse_simple_identifier_expression(tok));
+    }
+    seq->add(std::move(ns));
+
+    for (; tok->kind == TokenKind::eAccessMember; ++tok) {}
+
+    if (tok->kind == TokenKind::eAccessNamespace) {
+      throw syntax_error{"member identifier cannot contain nested namespace"};
+    }
+
+    return seq;
   }
 
   template <typename RootNodeType>
@@ -231,77 +256,77 @@ namespace claire::parser {
   //    return node;
   //  }
 
-  std::unique_ptr<ASTNode> Parser::parse_module_open_stmt(ParseState &state,
-    std::vector<Token>::const_iterator &tok, std::vector<Token> const &tokens) {
-
-    auto module_root = std::make_unique<ASTNode>();
-
-    for (; state > ParseState::eFinal;) {
-      if (++tok == tokens.end()) {
-        return module_root;
-      }
-
-      if (state = next_state(state, *tok); state <= ParseState::eFinal) {
-        return module_root;
-      }
-
-      if (state == ParseState::eIdentifierExpr) {
-        // TODO(rihwis-weard): correct way to cache repeated ASTNode/Module resolutions and returning
-        //                     unique_ptr to ASTNode? May need to use shared_ptr/weak_ptrs all around
-        //        if (auto mod = mod_map_.find(tok->repr); mod != mod_map_.end()) {
-        //          return std::unique_ptr<ASTNode>{mod->second.get()};
-        //        }
-
-        // TODO(rihtwis-weard): return `OpenModuleStmt` if `Module` is already loaded
-
-        // TODO(rihwis-weard): don't hard-code module lookup/resolution
-        // distribute module registry, file -> module names
-        auto toks = Lexer{stdlib_path_ + "io.clr"}.lex();
-
-        // TODO(rihtwis-weard): module not found exception or save error and keep parsing
-        return parse<ModuleDecl>(toks, tok->repr);
-      }
-    }
-
-    return module_root;
-  }
-
-  std::unique_ptr<ExternDecl> Parser::parse_extern_decl(ParseState &state,
-    std::vector<Token>::const_iterator tok, std::vector<Token> const &tokens) {
-
-    std::string              name{};
-    std::vector<FunctionArg> args{};
-    std::string              return_type{};
-    std::string              linkage_name{};
-
-    for (; state > ParseState::eFinal;) {
-      if (++tok == tokens.end()) {
-        return std::make_unique<ExternDecl>(
-          name, std::move(args), return_type, std::make_unique<StringExpr>(linkage_name));
-      }
-
-      if (state = next_state(state, *tok); state <= ParseState::eFinal) {
-        return std::make_unique<ExternDecl>(
-          name, std::move(args), return_type, std::make_unique<StringExpr>(linkage_name));
-      }
-
-      if (state == ParseState::eExternDeclName) {
-        name = tok->repr;
-      } else if (state == ParseState::eFunctionDeclArgs) {
-        args = parse_function_decl_args(tok);
-        --tok;
-      } else if (state == ParseState::eFunctionDeclReturnType) {
-        tok++;
-        return_type = tok->repr;
-        state       = ParseState::eExternDecl;
-      } else if (state == ParseState::eExternDeclLinkageName) {
-        linkage_name = tok->repr;
-      }
-    }
-
-    // TODO(rihtwis-weard): need to record errors
-    return nullptr;
-  }
+  //  std::unique_ptr<ASTNode> Parser::parse_module_open_stmt(ParseState &state,
+  //    std::vector<Token>::const_iterator &tok, std::vector<Token> const &tokens) {
+  //
+  //    auto module_root = std::make_unique<ASTNode>();
+  //
+  //    for (; state > ParseState::eFinal;) {
+  //      if (++tok == tokens.end()) {
+  //        return module_root;
+  //      }
+  //
+  //      if (state = next_state(state, *tok); state <= ParseState::eFinal) {
+  //        return module_root;
+  //      }
+  //
+  //      if (state == ParseState::eIdentifierExpr) {
+  //        // TODO(rihwis-weard): correct way to cache repeated ASTNode/Module resolutions and returning
+  //        //                     unique_ptr to ASTNode? May need to use shared_ptr/weak_ptrs all around
+  //        //        if (auto mod = mod_map_.find(tok->repr); mod != mod_map_.end()) {
+  //        //          return std::unique_ptr<ASTNode>{mod->second.get()};
+  //        //        }
+  //
+  //        // TODO(rihtwis-weard): return `OpenModuleStmt` if `Module` is already loaded
+  //
+  //        // TODO(rihwis-weard): don't hard-code module lookup/resolution
+  //        // distribute module registry, file -> module names
+  //        auto toks = Lexer{stdlib_path_ + "io.clr"}.lex();
+  //
+  //        // TODO(rihtwis-weard): module not found exception or save error and keep parsing
+  //        return parse<ModuleDecl>(toks, tok->repr);
+  //      }
+  //    }
+  //
+  //    return module_root;
+  //  }
+  //
+  //  std::unique_ptr<ExternDecl> Parser::parse_extern_decl(ParseState &state,
+  //    std::vector<Token>::const_iterator tok, std::vector<Token> const &tokens) {
+  //
+  //    std::string              name{};
+  //    std::vector<FunctionArg> args{};
+  //    std::string              return_type{};
+  //    std::string              linkage_name{};
+  //
+  //    for (; state > ParseState::eFinal;) {
+  //      if (++tok == tokens.end()) {
+  //        return std::make_unique<ExternDecl>(
+  //          name, std::move(args), return_type, std::make_unique<StringExpr>(linkage_name));
+  //      }
+  //
+  //      if (state = next_state(state, *tok); state <= ParseState::eFinal) {
+  //        return std::make_unique<ExternDecl>(
+  //          name, std::move(args), return_type, std::make_unique<StringExpr>(linkage_name));
+  //      }
+  //
+  //      if (state == ParseState::eExternDeclName) {
+  //        name = tok->repr;
+  //      } else if (state == ParseState::eFunctionDeclArgs) {
+  //        args = parse_function_decl_args(tok);
+  //        --tok;
+  //      } else if (state == ParseState::eFunctionDeclReturnType) {
+  //        tok++;
+  //        return_type = tok->repr;
+  //        state       = ParseState::eExternDecl;
+  //      } else if (state == ParseState::eExternDeclLinkageName) {
+  //        linkage_name = tok->repr;
+  //      }
+  //    }
+  //
+  //    // TODO(rihtwis-weard): need to record errors
+  //    return nullptr;
+  //  }
 
   std::vector<FunctionArg> Parser::parse_function_decl_args(
     std::vector<Token>::const_iterator &tok) {
