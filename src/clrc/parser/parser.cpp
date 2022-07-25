@@ -55,8 +55,9 @@ namespace claire::parser {
 
   /// Parses a function call expression
   ///
-  /// functionArg ::= Expr
-  /// functionCallExpr ::= identifierExpr '(' functionArg* (',' functionArg)* ')'
+  /// nonEmptyExpressionSequence ::= Expr | Expr , nonEmptyExpressionSequence
+  /// expressionSequence ::= empty | nonEmptyExpressionSequence
+  /// functionCallExpr ::= identifierExpr '(' expressionSequence ')'
   ///
   /// \param tok
   /// \param callee
@@ -73,6 +74,22 @@ namespace claire::parser {
     }
 
     return call;
+  }
+
+  std::unique_ptr<ExpressionSequence> parse_expression_sequence(parse_context &ctx) {
+    auto seq = std::make_unique<ExpressionSequence>();
+    // TODO(rw): reserve ',' as expression separator
+    for (; ctx.tok != ctx.tokens.end() and ctx.tok->kind != TokenKind::eSeparator;
+         ++ctx.tok) {
+      // TODO(rw): generic parse_expr, stubbed as parse_identifier_expr for now
+      seq->add(std::make_unique<IdentifierExpr>(ctx.tok->repr));
+      // eat comma separator
+      ctx.tok = std::next(ctx.tok);
+      if (ctx.tok == ctx.tokens.end()) {
+        break;
+      }
+    }
+    return seq;
   }
 
   template <typename RootNodeType>

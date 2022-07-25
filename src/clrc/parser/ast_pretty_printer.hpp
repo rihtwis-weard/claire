@@ -73,6 +73,10 @@ namespace claire::parser {
     std::string operator()(NamespaceAccessExpr const *expr) override {
       return "NamespaceAccessExpr: " + expr->id();
     }
+
+    std::string operator()(ExpressionSequence const *expr) override {
+      return "ExpressionSequence";
+    }
   };
 
 } // namespace claire::parser

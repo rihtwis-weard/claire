@@ -13,12 +13,26 @@ namespace claire::parser {
 
   using token_iterator = std::vector<Token>::const_iterator;
 
+  struct parse_context {
+    std::vector<Token> const &tokens;
+
+    token_iterator tok;
+
+  public:
+    explicit parse_context(std::vector<Token> const &tokens)
+      : tokens{tokens}
+      , tok{tokens.begin()} {
+    }
+  };
+
   std::unique_ptr<IdentifierExpr> parse_simple_identifier_expression(token_iterator &tok);
 
   std::unique_ptr<IdentifierSeq> parse_identifier_sequence(token_iterator &tok);
 
   std::unique_ptr<FunctionCallExpr> parse_function_call_expression(
     token_iterator &tok, std::unique_ptr<Expr> &&callee);
+
+  std::unique_ptr<ExpressionSequence> parse_expression_sequence(parse_context &ctx);
 
   class Parser {
     std::string stdlib_path_;
