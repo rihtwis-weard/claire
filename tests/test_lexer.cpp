@@ -3,7 +3,7 @@
 
 int main() {
   "hello_world"_test = []() {
-    auto lexemes = claire::parser::Lexer{"../../examples/hello_world.clr"}.lex();
+    auto lexemes = claire::parser::Lexer{"../../examples/hello_world.clr"}.tokenize();
     Approvals::verifyAll("hello_world.clr", lexemes);
   };
 
@@ -24,7 +24,7 @@ int main() {
 
     for (auto const &src : sources) {
       auto lexer = claire::parser::Lexer{"../../tests/data/" + src};
-      expect(throws([&]() { lexer.lex(); }));
+      expect(throws([&]() { lexer.tokenize(); }));
     }
   };
 }

@@ -53,10 +53,16 @@ namespace claire::parser {
   struct Token {
     TokenKind   kind;
     std::string repr;
+
+    friend std::ostream &operator<<(std::ostream &os, Token const &tok);
+  };
+
+  struct Lexeme {
+    TokenKind   kind;
+    std::string repr;
     std::size_t len;
 
     // Debugging metadata
-//    std::string name;
     std::size_t line_num = 1;
     std::size_t col_num  = 1;
 
@@ -89,7 +95,9 @@ namespace claire::parser {
       len = 0;
     }
 
-    friend std::ostream &operator<<(std::ostream &os, Token const &tok);
+    auto as_token() {
+      return Token{kind, repr};
+    }
   };
 
 #define TOKEN_DESC(kind, desc)                                                           \

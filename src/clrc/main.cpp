@@ -7,7 +7,7 @@
 int main(int argc, char const *argv[]) {
   constexpr auto source_fname = "../../examples/hello_world.clr";
 
-  auto tokens = claire::parser::Lexer{source_fname}.lex();
+  auto tokens = claire::parser::Lexer{source_fname}.tokenize();
   for (auto const &tok : tokens) {
     std::cout << tok << "\n";
   }
