@@ -53,10 +53,50 @@ namespace claire::parser {
     return seq;
   }
 
-  /// Parses a function call expression
+  /// Parses a function definition
+  ///
+  /// <FunctionDefinition> ::= "func" <IdentifierSeq> '(' <TypedParameterList> ')' '{' <FunctionBody> '}'
+  ///
+  /// \param ctx
+  /// \return
+  std::unique_ptr<FunctionDefinition> parse_function_definition(parse_context &ctx) {
+    // eat "func" keyword
+    ctx.tok         = std::next(ctx.tok);
+    auto name       = parse_identifier_sequence(ctx.tok);
+    auto param_list = parse_parameter_list(ctx);
+    auto ret_type   = parse_function_return_type(ctx);
+    auto body       = parse_function_body(ctx);
+    return std::make_unique(
+      std::move(name), std::move(param_list), std::move(ret_type), std::move(body));
+  }
+
+  /// Parses an expression sequence
   ///
   /// nonEmptyExpressionSequence ::= Expr | Expr , nonEmptyExpressionSequence
   /// expressionSequence ::= empty | nonEmptyExpressionSequence
+  ///
+  /// \param ctx
+  /// \return
+  std::unique_ptr<ExpressionSequence> parse_expression_sequence(parse_context &ctx) {
+    auto seq = std::make_unique<ExpressionSequence>();
+    // TODO(rw): reserve ',' as expression separator
+    // TODO(rw): better TokenKind checks
+    for (; ctx.tok != ctx.tokens.end() and ctx.tok->kind != TokenKind::eSeparator and
+           ctx.tok->kind != TokenKind::eRParens;
+         ++ctx.tok) {
+      // TODO(rw): generic parse_expr, stubbed as parse_identifier_expr for now
+      seq->add(std::make_unique<IdentifierExpr>(ctx.tok->repr));
+      // eat comma separator
+      ctx.tok = std::next(ctx.tok);
+      if (ctx.tok == ctx.tokens.end()) {
+        break;
+      }
+    }
+    return seq;
+  }
+
+  /// Parses a function call expression
+  ///
   /// functionCallExpr ::= identifierExpr '(' expressionSequence ')'
   ///
   /// \param ctx
@@ -77,24 +117,6 @@ namespace claire::parser {
     // eat right parens
     ctx.tok = std::next(ctx.tok);
     return call;
-  }
-
-  std::unique_ptr<ExpressionSequence> parse_expression_sequence(parse_context &ctx) {
-    auto seq = std::make_unique<ExpressionSequence>();
-    // TODO(rw): reserve ',' as expression separator
-    // TODO(rw): better TokenKind checks
-    for (; ctx.tok != ctx.tokens.end() and ctx.tok->kind != TokenKind::eSeparator and
-           ctx.tok->kind != TokenKind::eRParens;
-         ++ctx.tok) {
-      // TODO(rw): generic parse_expr, stubbed as parse_identifier_expr for now
-      seq->add(std::make_unique<IdentifierExpr>(ctx.tok->repr));
-      // eat comma separator
-      ctx.tok = std::next(ctx.tok);
-      if (ctx.tok == ctx.tokens.end()) {
-        break;
-      }
-    }
-    return seq;
   }
 
   template <typename RootNodeType>

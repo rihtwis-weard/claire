@@ -12,12 +12,13 @@ class FunctionCallExpr;
 class IdentifierSeq;
 class ExpressionSequence;
 class NamespaceAccessExpr;
+class FunctionDefinition;
 
 
-using ASTNodeVariant = std::variant<ASTNode const *,ProgramDecl const *,IdentifierExpr const *,StringExpr const *,FunctionCallExpr const *,IdentifierSeq const *,ExpressionSequence const *,NamespaceAccessExpr const *>;
+using ASTNodeVariant = std::variant<ASTNode const *,ProgramDecl const *,IdentifierExpr const *,StringExpr const *,FunctionCallExpr const *,IdentifierSeq const *,ExpressionSequence const *,NamespaceAccessExpr const *,FunctionDefinition const *>;
 
 template <typename R>
-class ASTVisitor : public Visitor<R, ASTNode,ProgramDecl,IdentifierExpr,StringExpr,FunctionCallExpr,IdentifierSeq,ExpressionSequence,NamespaceAccessExpr> {
+class ASTVisitor : public Visitor<R, ASTNode,ProgramDecl,IdentifierExpr,StringExpr,FunctionCallExpr,IdentifierSeq,ExpressionSequence,NamespaceAccessExpr,FunctionDefinition> {
 
 public:
   R operator()(ASTNode const *) override {

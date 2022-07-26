@@ -29,6 +29,8 @@ namespace claire::parser {
 
   std::unique_ptr<IdentifierSeq> parse_identifier_sequence(token_iterator &tok);
 
+  std::unique_ptr<FunctionDefinition> parse_function_definition(parse_context &ctx);
+
   std::unique_ptr<FunctionCallExpr> parse_function_call_expression(
     parse_context &ctx, std::unique_ptr<Expr> &&callee);
 
