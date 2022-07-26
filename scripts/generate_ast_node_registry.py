@@ -8,6 +8,7 @@ AST_NODE_TYPES = [
     "FunctionCallExpr",
     "IdentifierSeq",
     "ExpressionSequence",
+    "NamespaceAccessExpr",
 ]
 
 CODE_TEMPLATE = """

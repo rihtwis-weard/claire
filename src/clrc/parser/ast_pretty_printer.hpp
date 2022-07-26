@@ -34,37 +34,37 @@ namespace claire::parser {
       return "ProgramDecl";
     }
 
-    std::string operator()(ModuleDecl const *decl) override {
-      return "ModuleDecl: " + decl->id();
-    }
+    //    std::string operator()(ModuleDecl const *decl) override {
+    //      return "ModuleDecl: " + decl->id();
+    //    }
 
     std::string operator()(StringExpr const *expr) override {
       return "StringLiteral: " + expr->id();
     }
 
-    std::string operator()(ExternDecl const *decl) override {
-      return "ExternDecl: " + decl->id();
-    }
+    //    std::string operator()(ExternDecl const *decl) override {
+    //      return "ExternDecl: " + decl->id();
+    //    }
 
     std::string operator()(IdentifierExpr const *expr) override {
       return "IdentifierExpr: " + expr->id();
     }
 
-    std::string operator()(ModuleAccessExpr const *expr) override {
-      return expr->module_name() + "." + expr->id();
-    }
+    //    std::string operator()(ModuleAccessExpr const *expr) override {
+    //      return expr->module_name() + "." + expr->id();
+    //    }
 
     std::string operator()(FunctionCallExpr const *expr) override {
       return "FunctionCallExpr: " + expr->callee()->id();
     }
 
-    std::string operator()(FunctionDef const *decl) override {
-      return "FunctionDef: " + decl->id();
-    }
-
-    std::string operator()(FunctionBody const *decl) override {
-      return "FunctionBody";
-    }
+    //    std::string operator()(FunctionDef const *decl) override {
+    //      return "FunctionDef: " + decl->id();
+    //    }
+    //
+    //    std::string operator()(FunctionBody const *decl) override {
+    //      return "FunctionBody";
+    //    }
 
     std::string operator()(IdentifierSeq const *seq) override {
       return "IdentifierSequence";
