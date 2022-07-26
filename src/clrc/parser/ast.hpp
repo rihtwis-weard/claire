@@ -1,12 +1,13 @@
 #pragma once
 
 #include <iomanip>
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/Module.h>
+#include <llvm/IR/Value.h>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "../utils.hpp"
-#include "../visitor.hpp"
 #include "ast_registry.hpp"
 
 namespace claire::parser {
