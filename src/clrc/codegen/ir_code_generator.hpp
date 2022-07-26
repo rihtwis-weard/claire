@@ -1,7 +1,10 @@
 #pragma once
 
+#include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/LegacyPassManager.h>
+#include <llvm/IR/Module.h>
+#include <llvm/IR/Value.h>
 #include <llvm/Support/CodeGen.h>
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/Host.h>
@@ -15,7 +18,7 @@
 
 namespace claire::codegen {
 
-  class IRCodeGenerator : public parser::ASTVisitor<> {
+  class IRCodeGenerator : public parser::ASTVisitor<llvm::Value *> {
     llvm::LLVMContext    ctx_;
     llvm::Module         mod_;
     llvm::IRBuilder<>    builder_;

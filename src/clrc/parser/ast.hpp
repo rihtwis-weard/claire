@@ -3,40 +3,13 @@
 #include <iomanip>
 #include <memory>
 #include <utility>
-#include <variant>
-
-#include <llvm/IR/IRBuilder.h>
-#include <llvm/IR/Module.h>
-#include <llvm/IR/Value.h>
+#include <vector>
 
 #include "../utils.hpp"
 #include "../visitor.hpp"
+#include "ast_registry.hpp"
 
 namespace claire::parser {
-
-  template <typename R>
-  class ASTVisitor;
-
-  // TODO(rw): clean this shit up
-  class ASTNode;
-  class ProgramDecl;
-  class IdentifierExpr;
-  class StringExpr;
-  class FunctionCallExpr;
-  class ModuleDecl;
-  class ExternDecl;
-  class ModuleAccessExpr;
-  class FunctionDef;
-  class IdentifierSeq;
-  class NamespaceAccessExpr;
-  class ExpressionSequence;
-
-  // TODO(rihwis-weard): can use custom visitor pattern instead of `std::visit` and `std::variant`
-  //                     and use virtual dispatch
-  using ASTNodeVariant = std::variant<ASTNode const *, StringExpr const *,
-    IdentifierExpr const *, FunctionCallExpr const *, ProgramDecl const *,
-    ModuleDecl const *, ExternDecl const *, ModuleAccessExpr const *, FunctionDef const *,
-    IdentifierSeq const *, NamespaceAccessExpr const *, ExpressionSequence const *>;
 
   class ASTNode {
   protected:
@@ -282,19 +255,6 @@ namespace claire::parser {
   public:
     [[nodiscard]] ASTNodeVariant as_variant() const override {
       return this;
-    }
-  };
-
-  template <typename R = llvm::Value *>
-  class ASTVisitor
-    // TODO(rw): clean this shit up
-    : public Visitor<R, ASTNode, ProgramDecl, StringExpr, IdentifierExpr,
-        FunctionCallExpr, ModuleDecl, ExternDecl, ModuleAccessExpr, FunctionDef,
-        FunctionBody, IdentifierSeq, NamespaceAccessExpr, ExpressionSequence> {
-
-  public:
-    R operator()(ASTNode const *) override {
-      return nullptr;
     }
   };
 
