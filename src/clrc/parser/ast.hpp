@@ -114,12 +114,12 @@ namespace claire::parser {
     }
   };
 
-  class FunctionDef : public Decl {
+  class FunctionDefinition : public Decl {
     std::unique_ptr<IdentifierExpr> name_;
     std::vector<FunctionArg>        args_;
 
   public:
-    FunctionDef(std::string id, std::unique_ptr<IdentifierExpr> &&name,
+    FunctionDefinition(std::string id, std::unique_ptr<IdentifierExpr> &&name,
       std::vector<FunctionArg> &&args, std::unique_ptr<ASTNode> &&body)
       : ASTNode{std::move(id)}
       , name_{std::move(name)}
